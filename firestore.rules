@@ -1,0 +1,189 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions for authorization
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+    
+    function isManager() {
+      return isAuthenticated() && (getUserRole() == 'admin' || getUserRole() == 'manager');
+    }
+    
+    function hasDocumentAccess(documentData) {
+      return isAuthenticated() && (
+        // Owner access
+        documentData.ownerId == request.auth.uid ||
+        // Shared access
+        request.auth.uid in documentData.sharedWith ||
+        // Permission-based access
+        documentData.permissions.hasAny([request.auth.uid]) ||
+        // Admin access
+        isAdmin()
+      );
+    }
+    
+    function hasDocumentPermission(documentData, requiredRole) {
+      if (documentData.ownerId == request.auth.uid || isAdmin()) {
+        return true;
+      }
+      
+      let userPermissions = documentData.permissions.filter(function(permission) {
+        return permission.userId == request.auth.uid;
+      });
+      
+      if (userPermissions.size() == 0) {
+        return false;
+      }
+      
+      let permission = userPermissions[0];
+      return permission.role == requiredRole || 
+             (requiredRole == 'viewer' && (permission.role == 'editor' || permission.role == 'owner'));
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Users can read their own profile and admins can read all profiles
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Users can update their own profile (except role), admins can update anything
+      allow update: if isOwner(userId) && 
+        (!('role' in request.resource.data) || 
+         request.resource.data.role == resource.data.role) ||
+        isAdmin();
+      
+      // Only admins can create users
+      allow create: if isAdmin();
+      
+      // Only admins can delete users (soft delete by setting isActive: false)
+      allow delete: if isAdmin();
+    }
+    
+    // Documents collection
+    match /documents/{documentId} {
+      // Read access: owner, shared users, users with permissions, or admins
+      allow read: if hasDocumentAccess(resource.data);
+      
+      // Create access: authenticated users
+      allow create: if isAuthenticated() && 
+        request.resource.data.ownerId == request.auth.uid &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.updatedAt == request.time;
+      
+      // Update access: owner, users with editor permissions, or admins
+      allow update: if hasDocumentAccess(resource.data) && 
+        (resource.data.ownerId == request.auth.uid || 
+         hasDocumentPermission(resource.data, 'editor') ||
+         isAdmin()) &&
+        request.resource.data.updatedAt == request.time;
+      
+      // Delete access: owner or admins only
+      allow delete: if resource.data.ownerId == request.auth.uid || isAdmin();
+    }
+    
+    // Folders collection
+    match /folders/{folderId} {
+      // Read access: owner, shared users, or admins
+      allow read: if isAuthenticated() && (
+        resource.data.ownerId == request.auth.uid ||
+        request.auth.uid in resource.data.sharedWith ||
+        isAdmin()
+      );
+      
+      // Create access: authenticated users
+      allow create: if isAuthenticated() && 
+        request.resource.data.ownerId == request.auth.uid &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.updatedAt == request.time;
+      
+      // Update access: owner or admins
+      allow update: if (resource.data.ownerId == request.auth.uid || isAdmin()) &&
+        request.resource.data.updatedAt == request.time;
+      
+      // Delete access: owner or admins only
+      allow delete: if resource.data.ownerId == request.auth.uid || isAdmin();
+    }
+    
+    // Permissions collection (if using separate collection for granular permissions)
+    match /permissions/{permissionId} {
+      // Read access: document owner, target user, or admins
+      allow read: if isAuthenticated() && (
+        resource.data.grantedBy == request.auth.uid ||
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+      
+      // Create/Update access: document owner or admins
+      allow create, update: if isAuthenticated() && (
+        request.resource.data.grantedBy == request.auth.uid ||
+        isAdmin()
+      ) && request.resource.data.grantedAt == request.time;
+      
+      // Delete access: document owner or admins
+      allow delete: if resource.data.grantedBy == request.auth.uid || isAdmin();
+    }
+    
+    // Audit logs collection
+    match /audit_logs/{logId} {
+      // Read access: admins only, or users can read their own logs
+      allow read: if isAdmin() || 
+        (isAuthenticated() && resource.data.userId == request.auth.uid);
+      
+      // Create access: authenticated users (for their own actions)
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.timestamp == request.time;
+      
+      // Update/Delete access: admins only
+      allow update, delete: if isAdmin();
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      // Read access: target user or admins
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+      
+      // Create access: system or admins
+      allow create: if isAdmin();
+      
+      // Update access: target user (for marking as read) or admins
+      allow update: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+      
+      // Delete access: target user or admins
+      allow delete: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+    }
+    
+    // System configuration collection
+    match /system_config/{configId} {
+      // Read access: managers and admins
+      allow read: if isManager();
+      
+      // Write access: admins only
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Default deny rule for any other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
