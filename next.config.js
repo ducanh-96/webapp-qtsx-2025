@@ -1,9 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   images: {
-    domains: ['lh3.googleusercontent.com', 'firebasestorage.googleapis.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
+      },
+    ],
   },
   async headers() {
     return [
@@ -25,6 +30,31 @@ const nextConfig = {
         ],
       },
     ];
+  },
+  webpack: (config, { isServer }) => {
+    // Ignore Node.js core modules for client build to avoid build errors with googleapis
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        os: false,
+        stream: false,
+        http: false,
+        https: false,
+        zlib: false,
+        crypto: false,
+        child_process: false,
+        net: false,
+        tls: false,
+        buffer: false,
+        util: false,
+        assert: false,
+        url: false,
+        constants: false,
+      };
+    }
+    return config;
   },
 };
 

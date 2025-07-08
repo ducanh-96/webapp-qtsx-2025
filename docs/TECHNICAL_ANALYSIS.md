@@ -14,7 +14,6 @@ This document provides comprehensive technical analysis for a modern web applica
 ├─────────────────────────────────────────────────────────────────┤
 │  React SPA (Frontend)                                          │
 │  ├─ Authentication (Firebase Auth)                             │
-│  ├─ Document Management UI                                     │
 │  ├─ Power BI Embedded Reports                                  │
 │  └─ Real-time Data Synchronization                             │
 └─────────────────────────────────────────────────────────────────┘
@@ -27,7 +26,6 @@ This document provides comprehensive technical analysis for a modern web applica
 │  Node.js + Express API Server                                  │
 │  ├─ Authentication Middleware                                  │
 │  ├─ Google APIs Integration                                    │
-│  ├─ File Upload/Download Handlers                              │
 │  ├─ Permission Management                                      │
 │  └─ WebSocket Real-time Updates                                │
 └─────────────────────────────────────────────────────────────────┘
@@ -38,7 +36,7 @@ This document provides comprehensive technical analysis for a modern web applica
 │                       SERVICES LAYER                           │
 ├─────────────────────────────────────────────────────────────────┤
 │  Google Cloud Platform Services                                │
-│  ├─ Google Drive API (File Storage)                           │
+│  ├─ Google Drive API                                         │
 │  ├─ Google Sheets API (Structured Data)                       │
 │  ├─ Google Workspace Admin SDK                                │
 │  └─ Google Cloud Identity & Access Management                 │
@@ -101,10 +99,6 @@ src/
 │   │   ├── LoginForm.tsx
 │   │   ├── UserProfile.tsx
 │   │   └── PermissionGuard.tsx
-│   ├── documents/
-│   │   ├── FileManager.tsx
-│   │   ├── DocumentViewer.tsx
-│   │   └── UploadDialog.tsx
 │   ├── reports/
 │   │   ├── PowerBIEmbed.tsx
 │   │   ├── Dashboard.tsx
@@ -115,7 +109,6 @@ src/
 │       └── ErrorBoundary.tsx
 ├── hooks/
 │   ├── useAuth.ts
-│   ├── useDocuments.ts
 │   └── useReports.ts
 ├── services/
 │   ├── apiClient.ts
@@ -149,7 +142,6 @@ app.use(authMiddleware); // Authentication
 
 // Route handlers
 app.use('/api/auth', authRoutes);
-app.use('/api/documents', documentRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/users', userRoutes);
 ```
@@ -158,18 +150,11 @@ app.use('/api/users', userRoutes);
 
 ```javascript
 // RESTful API structure
-GET    /api/documents           // List documents
-POST   /api/documents           // Upload document
-GET    /api/documents/:id       // Get document details
-PUT    /api/documents/:id       // Update document
-DELETE /api/documents/:id       // Delete document
-GET    /api/documents/:id/share // Get sharing settings
-POST   /api/documents/:id/share // Update sharing settings
 
 // Google API integration
-GET    /api/google/drive/files  // List Google Drive files
-POST   /api/google/sheets/data  // Read Google Sheets data
-PUT    /api/google/sheets/data  // Update Google Sheets data
+GET / api / google / drive / files; // List Google Drive files
+POST / api / google / sheets / data; // Read Google Sheets data
+PUT / api / google / sheets / data; // Update Google Sheets data
 ```
 
 ### Database Architecture
@@ -202,32 +187,6 @@ PUT    /api/google/sheets/data  // Update Google Sheets data
 }
 ```
 
-**Document Metadata Collection:**
-
-```javascript
-// documents collection
-{
-  id: "doc_unique_id",
-  googleFileId: "google_drive_file_id",
-  name: "Financial Report Q1.xlsx",
-  type: "spreadsheet", // document, presentation, pdf, image
-  mimeType: "application/vnd.ms-excel",
-  size: 1024000,
-  owner: "user_uid",
-  permissions: {
-    readers: ["uid1", "uid2"],
-    writers: ["uid3"],
-    public: false
-  },
-  tags: ["finance", "quarterly", "report"],
-  folderId: "folder_id",
-  version: "1.2",
-  createdAt: timestamp,
-  updatedAt: timestamp,
-  lastAccessedAt: timestamp
-}
-```
-
 **Audit Trail Collection:**
 
 ```javascript
@@ -235,7 +194,7 @@ PUT    /api/google/sheets/data  // Update Google Sheets data
 {
   id: "log_id",
   userId: "user_uid",
-  action: "file_download", // login, file_upload, file_download, etc.
+  action: "file_download", // login, etc.
   resource: "document_id",
   details: {
     fileName: "report.pdf",
@@ -672,7 +631,6 @@ const apiCallWithFallback = async (primaryCall, fallbackCall) => {
 
 - Page load time: <2 seconds
 - API response time: <500ms
-- File upload speed: >1MB/s
 - Concurrent users: 200+ without degradation
 - Availability: 99.9% uptime
 

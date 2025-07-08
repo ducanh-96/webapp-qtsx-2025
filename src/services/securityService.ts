@@ -1,7 +1,7 @@
 import { auditService } from '@/config/firestore';
 
 // Security event types
-type SecurityEventType = 
+type SecurityEventType =
   | 'login_attempt'
   | 'login_success'
   | 'login_failure'
@@ -22,7 +22,7 @@ interface SecurityEvent {
   ipAddress: string;
   userAgent: string;
   timestamp: Date;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   riskScore: number;
 }
 
@@ -53,9 +53,18 @@ interface SecurityAlert {
 }
 
 class SecurityService {
-  private loginAttempts = new Map<string, { count: number; lastAttempt: Date; lockedUntil?: Date }>();
-  private rateLimits = new Map<string, { requests: Date[]; blocked: boolean; blockedUntil?: Date }>();
-  private activeSessions = new Map<string, { userId: string; lastActivity: Date; ipAddress: string }>();
+  private loginAttempts = new Map<
+    string,
+    { count: number; lastAttempt: Date; lockedUntil?: Date }
+  >();
+  private rateLimits = new Map<
+    string,
+    { requests: Date[]; blocked: boolean; blockedUntil?: Date }
+  >();
+  private activeSessions = new Map<
+    string,
+    { userId: string; lastActivity: Date; ipAddress: string }
+  >();
   private securityEvents: SecurityEvent[] = [];
   private securityAlerts: SecurityAlert[] = [];
 
@@ -77,12 +86,6 @@ class SecurityService {
       blockDurationMs: 30 * 60 * 1000, // 30 minutes
     },
     {
-      endpoint: '/api/documents',
-      maxRequests: 100,
-      windowMs: 60 * 1000, // 1 minute
-      blockDurationMs: 5 * 60 * 1000, // 5 minutes
-    },
-    {
       endpoint: '/api/users',
       maxRequests: 20,
       windowMs: 60 * 1000, // 1 minute
@@ -92,15 +95,20 @@ class SecurityService {
 
   constructor() {
     // Clean up expired sessions and rate limits every 5 minutes
-    setInterval(() => {
-      this.cleanupExpiredSessions();
-      this.cleanupExpiredRateLimits();
-      this.cleanupExpiredLockouts();
-    }, 5 * 60 * 1000);
+    setInterval(
+      () => {
+        this.cleanupExpiredSessions();
+        this.cleanupExpiredRateLimits();
+        this.cleanupExpiredLockouts();
+      },
+      5 * 60 * 1000
+    );
   }
 
   // Log security event
-  async logSecurityEvent(event: Omit<SecurityEvent, 'timestamp' | 'riskScore'>): Promise<void> {
+  async logSecurityEvent(
+    event: Omit<SecurityEvent, 'timestamp' | 'riskScore'>
+  ): Promise<void> {
     const securityEvent: SecurityEvent = {
       ...event,
       timestamp: new Date(),
@@ -151,7 +159,9 @@ class SecurityService {
     const errors: string[] = [];
 
     if (password.length < this.defaultPolicy.passwordMinLength) {
-      errors.push(`Password must be at least ${this.defaultPolicy.passwordMinLength} characters long`);
+      errors.push(
+        `Password must be at least ${this.defaultPolicy.passwordMinLength} characters long`
+      );
     }
 
     if (!/[A-Z]/.test(password)) {
@@ -171,7 +181,13 @@ class SecurityService {
     }
 
     // Check against common passwords
-    const commonPasswords = ['password', '123456', 'password123', 'admin', 'qwerty'];
+    const commonPasswords = [
+      'password',
+      '123456',
+      'password123',
+      'admin',
+      'qwerty',
+    ];
     if (commonPasswords.includes(password.toLowerCase())) {
       errors.push('Password is too common');
     }
@@ -183,7 +199,12 @@ class SecurityService {
   }
 
   // Handle login attempt
-  async handleLoginAttempt(email: string, ipAddress: string, userAgent: string, success: boolean): Promise<boolean> {
+  async handleLoginAttempt(
+    email: string,
+    ipAddress: string,
+    userAgent: string,
+    success: boolean
+  ): Promise<boolean> {
     const key = `${email}:${ipAddress}`;
     const now = new Date();
 
@@ -211,7 +232,10 @@ class SecurityService {
       return false;
     }
 
-    const attempts = this.loginAttempts.get(key) || { count: 0, lastAttempt: now };
+    const attempts = this.loginAttempts.get(key) || {
+      count: 0,
+      lastAttempt: now,
+    };
 
     // Check if account is locked
     if (attempts.lockedUntil && now < attempts.lockedUntil) {
@@ -228,7 +252,7 @@ class SecurityService {
     if (success) {
       // Reset attempts on successful login
       this.loginAttempts.delete(key);
-      
+
       await this.logSecurityEvent({
         type: 'login_success',
         email,
@@ -243,8 +267,10 @@ class SecurityService {
       attempts.lastAttempt = now;
 
       if (attempts.count >= this.defaultPolicy.maxLoginAttempts) {
-        attempts.lockedUntil = new Date(now.getTime() + this.defaultPolicy.lockoutDuration * 60 * 1000);
-        
+        attempts.lockedUntil = new Date(
+          now.getTime() + this.defaultPolicy.lockoutDuration * 60 * 1000
+        );
+
         await this.createSecurityAlert({
           type: 'high',
           message: `Account ${email} locked due to ${attempts.count} failed login attempts`,
@@ -274,10 +300,17 @@ class SecurityService {
 
     const key = `${endpoint}:${ipAddress}`;
     const now = new Date();
-    const rateLimit = this.rateLimits.get(key) || { requests: [], blocked: false };
+    const rateLimit = this.rateLimits.get(key) || {
+      requests: [],
+      blocked: false,
+    };
 
     // Check if currently blocked
-    if (rateLimit.blocked && rateLimit.blockedUntil && now < rateLimit.blockedUntil) {
+    if (
+      rateLimit.blocked &&
+      rateLimit.blockedUntil &&
+      now < rateLimit.blockedUntil
+    ) {
       return false;
     }
 
@@ -302,9 +335,13 @@ class SecurityService {
   }
 
   // Validate session
-  validateSession(sessionId: string, userId: string, ipAddress: string): boolean {
+  validateSession(
+    sessionId: string,
+    userId: string,
+    ipAddress: string
+  ): boolean {
     const session = this.activeSessions.get(sessionId);
-    
+
     if (!session) {
       return false;
     }
@@ -320,7 +357,7 @@ class SecurityService {
         userId,
         ipAddress,
         userAgent: 'Unknown',
-        details: { 
+        details: {
           reason: 'IP address change during session',
           originalIP: session.ipAddress,
           newIP: ipAddress,
@@ -334,14 +371,14 @@ class SecurityService {
     const sessionAge = now.getTime() - session.lastActivity.getTime();
     if (sessionAge > this.defaultPolicy.sessionTimeout * 60 * 1000) {
       this.activeSessions.delete(sessionId);
-      
+
       this.logSecurityEvent({
         type: 'session_timeout',
         userId,
         ipAddress,
         userAgent: 'Unknown',
       });
-      
+
       return false;
     }
 
@@ -367,7 +404,9 @@ class SecurityService {
   }
 
   // Calculate risk score for security event
-  private calculateRiskScore(event: Omit<SecurityEvent, 'timestamp' | 'riskScore'>): number {
+  private calculateRiskScore(
+    event: Omit<SecurityEvent, 'timestamp' | 'riskScore'>
+  ): number {
     let score = 0;
 
     // Base scores by event type
@@ -394,11 +433,12 @@ class SecurityService {
     }
 
     // Increase score for repeated events from same IP
-    const recentEvents = this.securityEvents
-      .filter(e => e.ipAddress === event.ipAddress && 
-               Date.now() - e.timestamp.getTime() < 60 * 60 * 1000) // Last hour
-      .length;
-    
+    const recentEvents = this.securityEvents.filter(
+      e =>
+        e.ipAddress === event.ipAddress &&
+        Date.now() - e.timestamp.getTime() < 60 * 60 * 1000
+    ).length; // Last hour
+
     if (recentEvents > 10) {
       score += 3;
     }
@@ -411,13 +451,16 @@ class SecurityService {
     // Multiple failed logins from different IPs for same user
     if (event.type === 'login_failure' && event.email) {
       const recentFailures = this.securityEvents
-        .filter(e => e.type === 'login_failure' && 
-                e.email === event.email && 
-                Date.now() - e.timestamp.getTime() < 30 * 60 * 1000) // Last 30 minutes
+        .filter(
+          e =>
+            e.type === 'login_failure' &&
+            e.email === event.email &&
+            Date.now() - e.timestamp.getTime() < 30 * 60 * 1000
+        ) // Last 30 minutes
         .map(e => e.ipAddress);
-      
+
       const uniqueIPs = new Set(recentFailures);
-      
+
       if (uniqueIPs.size >= 3) {
         this.createSecurityAlert({
           type: 'high',
@@ -466,13 +509,16 @@ class SecurityService {
     activeSessions: number;
   } {
     const oneHourAgo = Date.now() - 60 * 60 * 1000;
-    const recentEvents = this.securityEvents.filter(e => e.timestamp.getTime() > oneHourAgo);
+    const recentEvents = this.securityEvents.filter(
+      e => e.timestamp.getTime() > oneHourAgo
+    );
     const activeAlerts = this.securityAlerts.filter(a => !a.resolved);
 
     return {
       recentEvents: recentEvents.slice(-20), // Last 20 events
       activeAlerts,
-      loginAttempts: recentEvents.filter(e => e.type === 'login_attempt').length,
+      loginAttempts: recentEvents.filter(e => e.type === 'login_attempt')
+        .length,
       blockedIPs: this.defaultPolicy.blockedIPs.length,
       activeSessions: this.activeSessions.size,
     };
@@ -482,7 +528,7 @@ class SecurityService {
   private cleanupExpiredSessions(): void {
     const now = new Date();
     const timeout = this.defaultPolicy.sessionTimeout * 60 * 1000;
-    
+
     for (const [sessionId, session] of this.activeSessions.entries()) {
       if (now.getTime() - session.lastActivity.getTime() > timeout) {
         this.activeSessions.delete(sessionId);
@@ -492,9 +538,13 @@ class SecurityService {
 
   private cleanupExpiredRateLimits(): void {
     const now = new Date();
-    
+
     for (const [key, rateLimit] of this.rateLimits.entries()) {
-      if (rateLimit.blocked && rateLimit.blockedUntil && now > rateLimit.blockedUntil) {
+      if (
+        rateLimit.blocked &&
+        rateLimit.blockedUntil &&
+        now > rateLimit.blockedUntil
+      ) {
         rateLimit.blocked = false;
         rateLimit.blockedUntil = undefined;
         this.rateLimits.set(key, rateLimit);
@@ -504,7 +554,7 @@ class SecurityService {
 
   private cleanupExpiredLockouts(): void {
     const now = new Date();
-    
+
     for (const [key, attempts] of this.loginAttempts.entries()) {
       if (attempts.lockedUntil && now > attempts.lockedUntil) {
         this.loginAttempts.delete(key);

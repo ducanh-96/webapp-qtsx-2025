@@ -10,6 +10,7 @@ export interface User {
   updatedAt: Date;
   lastLoginAt?: Date;
   isActive: boolean;
+  emailVerified?: boolean; // Thêm trường này để hỗ trợ xác thực email
 }
 
 export enum UserRole {
@@ -35,88 +36,17 @@ export interface UserPreferences {
 export interface NotificationSettings {
   email: boolean;
   push: boolean;
-  documentUpdates: boolean;
   systemAlerts: boolean;
 }
 
 export interface DashboardSettings {
   layout: 'grid' | 'list';
   itemsPerPage: number;
-  defaultView: 'documents' | 'analytics' | 'users';
-}
-
-// Document Types
-export interface Document {
-  id: string;
-  name: string;
-  type: DocumentType;
-  mimeType: string;
-  size: number;
-  url: string;
-  googleFileId?: string;
-  folderId?: string;
-  ownerId: string;
-  sharedWith: string[];
-  permissions: DocumentPermission[];
-  tags: string[];
-  description?: string;
-  version: number;
-  versions: DocumentVersion[];
-  createdAt: Date;
-  updatedAt: Date;
-  lastAccessedAt?: Date;
-  metadata: DocumentMetadata;
-}
-
-export enum DocumentType {
-  DOCUMENT = 'document',
-  SPREADSHEET = 'spreadsheet',
-  PRESENTATION = 'presentation',
-  PDF = 'pdf',
-  IMAGE = 'image',
-  VIDEO = 'video',
-  OTHER = 'other',
-}
-
-export interface DocumentVersion {
-  id: string;
-  version: number;
-  url: string;
-  size: number;
-  createdAt: Date;
-  createdBy: string;
-  changes?: string;
-}
-
-export interface DocumentPermission {
-  userId: string;
-  role: 'viewer' | 'editor' | 'owner';
-  grantedAt: Date;
-  grantedBy: string;
-}
-
-export interface DocumentMetadata {
-  [key: string]: string | number | boolean | Date;
-}
-
-// Folder Types
-export interface Folder {
-  id: string;
-  name: string;
-  parentId?: string;
-  path: string;
-  ownerId: string;
-  sharedWith: string[];
-  permissions: DocumentPermission[];
-  documentCount: number;
-  subfolderCount: number;
-  createdAt: Date;
-  updatedAt: Date;
-  googleFolderId?: string;
+  defaultView: 'analytics' | 'users';
 }
 
 // API Response Types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -187,7 +117,14 @@ export interface SignupData extends LoginCredentials {
 export interface FormField {
   name: string;
   label: string;
-  type: 'text' | 'email' | 'password' | 'textarea' | 'select' | 'checkbox' | 'file';
+  type:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'textarea'
+    | 'select'
+    | 'checkbox'
+    | 'file';
   required?: boolean;
   placeholder?: string;
   options?: { label: string; value: string }[];
@@ -195,7 +132,7 @@ export interface FormField {
     minLength?: number;
     maxLength?: number;
     pattern?: RegExp;
-    custom?: (value: any) => string | null;
+    custom?: (value: unknown) => string | null;
   };
 }
 
@@ -206,18 +143,8 @@ export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
 // State Management Types
 export interface AppState {
   auth: AuthState;
-  documents: DocumentState;
   users: UserState;
   ui: UIState;
-}
-
-export interface DocumentState {
-  documents: Document[];
-  folders: Folder[];
-  currentFolder: Folder | null;
-  selectedDocuments: string[];
-  loading: boolean;
-  error: string | null;
 }
 
 export interface UserState {
@@ -268,6 +195,7 @@ export interface ButtonProps extends BaseComponentProps {
 }
 
 export interface InputProps extends BaseComponentProps {
+  id?: string;
   type?: string;
   placeholder?: string;
   value?: string;
@@ -275,4 +203,5 @@ export interface InputProps extends BaseComponentProps {
   error?: string;
   disabled?: boolean;
   required?: boolean;
+  autoComplete?: string;
 }

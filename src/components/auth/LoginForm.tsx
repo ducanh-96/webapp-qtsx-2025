@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { ButtonProps, InputProps } from '@/types';
+import { useRouter } from 'next/navigation';
 
 // Reusable Button Component
 const Button: React.FC<ButtonProps> = ({
@@ -33,7 +35,9 @@ const Button: React.FC<ButtonProps> = ({
       type={type}
       disabled={disabled || loading}
       onClick={onClick}
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className} ${
+      className={`${baseClasses} ${variantClasses[variant]} ${
+        sizeClasses[size]
+      } ${className} ${
         disabled || loading ? 'opacity-50 cursor-not-allowed' : ''
       }`}
     >
@@ -45,6 +49,7 @@ const Button: React.FC<ButtonProps> = ({
 
 // Reusable Input Component
 const Input: React.FC<InputProps> = ({
+  id,
   type = 'text',
   placeholder,
   value,
@@ -57,16 +62,21 @@ const Input: React.FC<InputProps> = ({
   return (
     <div className="space-y-1">
       <input
+        id={id}
         type={type}
         placeholder={placeholder}
         value={value}
-        onChange={(e) => onChange?.(e.target.value)}
+        onChange={e => onChange?.(e.target.value)}
         disabled={disabled}
         required={required}
-        className={`input ${error ? 'border-error-500 focus-visible:ring-error-500' : ''} ${className}`}
+        className={`input ${
+          error ? 'border-error-500 focus-visible:ring-error-500' : ''
+        } ${className}`}
       />
       {error && (
-        <p className="text-sm text-error-600">{error}</p>
+        <p className="text-sm text-error-600" data-testid={`${id}-error`}>
+          {error}
+        </p>
       )}
     </div>
   );
@@ -74,41 +84,60 @@ const Input: React.FC<InputProps> = ({
 
 interface LoginFormProps {
   onToggleMode?: () => void;
-  redirectTo?: string;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, redirectTo }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
   const [isLoading, setIsLoading] = useState(false);
 
-  const { signInWithEmail, signInWithGoogle, error } = useAuth();
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotMsg, setForgotMsg] = useState<string | null>(null);
+  const [forgotLoading, setForgotLoading] = useState(false);
+
+  const {
+    signInWithEmail,
+    signInWithGoogle,
+    error,
+    user,
+    resendEmailVerification,
+    sendPasswordReset,
+  } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user && user.emailVerified) {
+      router.push('/dashboard');
+    }
+  }, [user, router]);
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
-    
+
     if (!email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Vui lòng nhập email';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = 'Email không hợp lệ';
     }
-    
+
     if (!password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Vui lòng nhập mật khẩu';
     } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+      newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     try {
       setIsLoading(true);
       await signInWithEmail(email, password);
@@ -132,28 +161,87 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, redirectTo }
     }
   };
 
+  const [verifyMsg, setVerifyMsg] = useState<string | null>(null);
+  const [verifyLoading, setVerifyLoading] = useState(false);
+
+  const isUnverifiedError =
+    error && error.toLowerCase().includes('chưa xác thực');
+
+  const handleResendVerification = async () => {
+    setVerifyLoading(true);
+    setVerifyMsg(null);
+    try {
+      await resendEmailVerification(email, password);
+      setVerifyMsg(
+        'Đã gửi lại email xác thực. Vui lòng kiểm tra hộp thư của bạn.'
+      );
+    } catch (err) {
+      const msg = (err as Error)?.message || 'Gửi lại email xác thực thất bại.';
+      setVerifyMsg(msg);
+    } finally {
+      setVerifyLoading(false);
+    }
+  };
+
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="card">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">Welcome back</h2>
-          <p className="mt-2 text-gray-600">Sign in to your account</p>
+        <div className="text-center mb-8 flex flex-col items-center">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={56}
+            height={56}
+            className="h-14 w-14 mb-2 rounded-lg object-contain"
+            priority
+          />
+          <h2 className="text-xl font-bold text-gray-900">
+            Hệ thống Báo cáo Quản trị Sản xuất
+          </h2>
+          <p className="mt-1 text-base text-gray-600">
+            Quản lý báo cáo QTSX DDC 2025
+          </p>
         </div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-error-50 border border-error-200 rounded-md">
-            <p className="text-sm text-error-600">{error}</p>
+        {isUnverifiedError ? (
+          <div className="mb-6 p-4 bg-warning-50 border border-warning-200 rounded-md">
+            <p className="text-sm text-warning-700">
+              Email của bạn chưa được xác thực. Vui lòng kiểm tra hộp thư và
+              nhấn vào link xác thực.
+            </p>
+            <Button
+              variant="outline"
+              size="md"
+              loading={verifyLoading}
+              onClick={handleResendVerification}
+              className="mt-3"
+            >
+              Gửi lại email xác thực
+            </Button>
+            {verifyMsg && (
+              <p className="text-xs mt-2 text-warning-600">{verifyMsg}</p>
+            )}
           </div>
+        ) : (
+          error && (
+            <div className="mb-6 p-4 bg-error-50 border border-error-200 rounded-md">
+              <p className="text-sm text-error-600">{error}</p>
+            </div>
+          )
         )}
 
-        <form onSubmit={handleEmailLogin} className="space-y-6">
+        <form onSubmit={handleEmailLogin} className="space-y-6" role="form">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email address
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Địa chỉ Email
             </label>
             <Input
+              id="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="Nhập email của bạn"
               value={email}
               onChange={setEmail}
               error={errors.email}
@@ -163,17 +251,22 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, redirectTo }
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Password
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Mật khẩu
             </label>
             <Input
+              id="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder="Nhập mật khẩu"
               value={password}
               onChange={setPassword}
               error={errors.password}
               disabled={isLoading}
               required
+              autoComplete="current-password"
             />
           </div>
 
@@ -185,15 +278,22 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, redirectTo }
                 type="checkbox"
                 className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                Remember me
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-gray-700"
+              >
+                Ghi nhớ đăng nhập
               </label>
             </div>
 
             <div className="text-sm">
-              <a href="#" className="font-medium text-primary-600 hover:text-primary-500">
-                Forgot your password?
-              </a>
+              <button
+                type="button"
+                className="font-medium text-primary-600 hover:text-primary-500"
+                onClick={() => setShowForgot(true)}
+              >
+                Quên mật khẩu?
+              </button>
             </div>
           </div>
 
@@ -204,7 +304,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, redirectTo }
             loading={isLoading}
             className="w-full"
           >
-            Sign in
+            Đăng nhập
           </Button>
         </form>
 
@@ -214,7 +314,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, redirectTo }
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              <span className="px-2 bg-white text-gray-500">
+                Hoặc tiếp tục với
+              </span>
             </div>
           </div>
 
@@ -244,7 +346,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, redirectTo }
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              Sign in with Google
+              Đăng nhập với Google
             </Button>
           </div>
         </div>
@@ -252,17 +354,73 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode, redirectTo }
         {onToggleMode && (
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Don&apos;t have an account?{' '}
+              Chưa có tài khoản?{' '}
               <button
                 onClick={onToggleMode}
                 className="font-medium text-primary-600 hover:text-primary-500"
               >
-                Sign up
+                Đăng ký
               </button>
             </p>
           </div>
         )}
       </div>
+      {/* Forgot Password Modal */}
+      {showForgot && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-md shadow-lg p-6 w-full max-w-sm">
+            <h3 className="text-lg font-semibold mb-4">Quên mật khẩu</h3>
+            <p className="text-sm text-gray-600 mb-2">
+              Nhập email của bạn để nhận liên kết đặt lại mật khẩu.
+            </p>
+            <input
+              type="email"
+              className="input w-full mb-2"
+              placeholder="Nhập email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              disabled={forgotLoading}
+            />
+            {forgotMsg && (
+              <p className="text-sm mb-2 text-primary-600">{forgotMsg}</p>
+            )}
+            <div className="flex justify-end space-x-2 mt-2">
+              <button
+                className="btn-outline"
+                onClick={() => {
+                  setShowForgot(false);
+                  setForgotMsg(null);
+                }}
+                disabled={forgotLoading}
+              >
+                Đóng
+              </button>
+              <button
+                className="btn-primary"
+                disabled={forgotLoading || !email}
+                onClick={async () => {
+                  setForgotLoading(true);
+                  setForgotMsg(null);
+                  try {
+                    await sendPasswordReset(email);
+                    setForgotMsg(
+                      'Đã gửi email đặt lại mật khẩu. Vui lòng kiểm tra hộp thư của bạn.'
+                    );
+                  } catch {
+                    setForgotMsg(
+                      'Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại.'
+                    );
+                  } finally {
+                    setForgotLoading(false);
+                  }
+                }}
+              >
+                {forgotLoading ? 'Đang gửi...' : 'Gửi'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

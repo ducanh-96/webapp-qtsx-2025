@@ -1,253 +1,294 @@
 # Enterprise Web Application
 
-A comprehensive document management and collaboration platform with Google Workspace integration, built with Next.js, Firebase, and TypeScript.
+A comprehensive enterprise-grade web application built with Next.js, featuring user management, document management, Power BI integration, and advanced security.
 
-## 🚀 Project Overview
+## 🚀 Features
 
-This enterprise web application provides:
+- **Authentication System**: Firebase Auth with Google Sign-in
+- **User Management**: Role-based access control (Admin, Manager, User)
+- **Power BI Integration**: Enterprise reporting and analytics
+- **Advanced Security**: Multi-layer security with threat detection
+- **Performance Optimization**: Intelligent caching and monitoring
 
-- **User Management**: Role-based access control with Google SSO
-- **Document Management**: Seamless Google Drive and Sheets integration
-- **Analytics & Reports**: Power BI integration for data-driven insights
-- **Real-time Collaboration**: Team-based document sharing and editing
+## 📋 Prerequisites
 
-## 📋 Development Status - Phase 1
+Before you begin, ensure you have the following installed:
 
-### ✅ Completed (Sprint 1.1: Infrastructure Setup)
+- **Node.js** (version 18.x or higher)
+- **npm** (comes with Node.js)
+- **Git** (for version control)
 
-- [x] React TypeScript project setup
-- [x] ESLint, Prettier, Git hooks configuration
-- [x] Firebase project setup and configuration
-- [x] Tailwind CSS styling system
-- [x] Project structure and build pipeline
-- [x] Environment configuration
+## 🛠️ Installation & Setup
 
-### 🚧 In Progress (Sprint 1.2: Authentication System)
+### 1. Clone the Repository
 
-- [x] Firebase Auth with Google SSO
-- [x] Authentication context and hooks
-- [x] Login/logout components
-- [x] Route protection system
-- [x] Basic dashboard implementation
-- [ ] User session management testing
-- [ ] Google Workspace accounts integration testing
-
-### 📅 Next Steps (Phase 1 - Week 2)
-
-- **Sprint 2.1**: Database Design (Firestore collections, security rules)
-- **Sprint 2.2**: Google APIs Integration (Drive API, Sheets API)
-
-## 🛠️ Tech Stack
-
-### Frontend
-
-- **Next.js 14** - React framework with App Router
-- **TypeScript** - Type safety and better development experience
-- **Tailwind CSS** - Utility-first CSS framework
-- **React Hook Form** - Form validation and management
-
-### Backend & Authentication
-
-- **Firebase Auth** - Authentication with Google SSO
-- **Firestore** - NoSQL database for user and document management
-- **Firebase Storage** - File storage and management
-
-### Development Tools
-
-- **ESLint & Prettier** - Code linting and formatting
-- **Husky** - Git hooks for code quality
-- **Jest** - Unit testing framework
-- **Cypress** - End-to-end testing
-
-## 🏃‍♂️ Getting Started
-
-### Prerequisites
-
-- Node.js 18+ installed
-- Firebase project created
-- Google Cloud Project with necessary APIs enabled
-
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone <repository-url>
-   cd enterprise-web-app
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Environment Setup**
-
-   ```bash
-   cp .env.local.example .env.local
-   ```
-
-   Fill in your Firebase and Google Cloud credentials in `.env.local`:
-
-   ```env
-   NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-   NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-   NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
-   ```
-
-4. **Start development server**
-
-   ```bash
-   npm run dev
-   ```
-
-5. **Open your browser**
-   Navigate to `http://localhost:3000`
-
-## 📁 Project Structure
-
-```
-src/
-├── app/                    # Next.js App Router pages
-│   ├── auth/login/        # Authentication pages
-│   ├── dashboard/         # Protected dashboard
-│   ├── layout.tsx         # Root layout with providers
-│   └── page.tsx           # Landing page
-├── components/            # Reusable React components
-│   └── auth/             # Authentication components
-├── contexts/             # React context providers
-│   └── AuthContext.tsx   # Authentication state management
-├── config/               # Configuration files
-│   └── firebase.ts       # Firebase configuration
-├── types/                # TypeScript type definitions
-│   └── index.ts          # Global type definitions
-└── hooks/                # Custom React hooks (future)
+```bash
+git clone <repository-url>
+cd enterprise-web-app
 ```
 
-## 🔐 Authentication
+### 2. Install Dependencies
 
-The application uses Firebase Authentication with Google SSO integration:
+```bash
+npm install
+```
 
-- **Google SSO**: Primary authentication method
-- **Role-based Access**: Admin, Manager, User roles
-- **Route Protection**: Automatic redirection for unauthenticated users
-- **Session Management**: Persistent authentication state
+### 3. Environment Configuration
 
-### User Roles
+Create a `.env.local` file in the root directory with the following variables:
 
-- **Admin**: Full system access, user management, system configuration
-- **Manager**: User management, document management, reporting
-- **User**: Document access, basic reporting
+```env
+# Firebase Configuration
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
-## 🔧 Development Scripts
+# Power BI Configuration (Optional)
+NEXT_PUBLIC_POWER_BI_CLIENT_ID=your_powerbi_client_id
+POWER_BI_CLIENT_SECRET=your_powerbi_client_secret
+POWER_BI_TENANT_ID=your_tenant_id
+POWER_BI_WORKSPACE_ID=your_workspace_id
+POWER_BI_REPORT_ID=your_report_id
+
+# Google APIs (Optional)
+GOOGLE_SERVICE_ACCOUNT_KEY=your_service_account_json
+```
+
+### 4. Firebase Setup
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a new project or use existing one
+3. Enable Authentication and Firestore
+4. Get your configuration keys from Project Settings
+5. Update the `.env.local` file with your Firebase configuration
+
+### 5. Deploy Firestore Security Rules
+
+```bash
+npm install -g firebase-tools
+firebase login
+firebase use your_project_id
+firebase deploy --only firestore:rules
+```
+
+## 🚀 Development
+
+### Start Development Server
+
+```bash
+npm run dev
+```
+
+The application will be available at [http://localhost:3000](http://localhost:3000)
+
+### Available Scripts
 
 ```bash
 # Development
 npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
-
-# Code Quality
 npm run lint         # Run ESLint
-npm run lint:fix     # Fix ESLint issues
-npm run type-check   # TypeScript type checking
+npm run lint:fix     # Fix ESLint issues automatically
 
 # Testing
 npm run test         # Run unit tests
-npm run test:watch   # Watch mode for tests
-npm run test:coverage # Test coverage report
+npm run test:watch   # Run tests in watch mode
+npm run test:coverage # Run tests with coverage report
+npm run cypress:open # Open Cypress E2E tests
+npm run cypress:run  # Run Cypress tests headlessly
+
+# Type Checking
+npm run type-check   # Run TypeScript type checking
+```
+
+## 📁 Project Structure
+
+```
+enterprise-web-app/
+├── src/
+│   ├── app/                 # Next.js 13+ App Router
+│   │   ├── admin/          # Admin dashboard pages
+│   │   ├── auth/           # Authentication pages
+│   │   ├── dashboard/      # Main dashboard
+│   │   ├── documents/      # Document management
+│   │   ├── reports/        # Power BI reports
+│   │   └── api/           # API routes
+│   ├── components/         # React components
+│   │   ├── admin/         # Admin components
+│   │   ├── auth/          # Authentication components
+│   │   ├── documents/     # Document components
+│   │   └── reports/       # Reporting components
+│   ├── contexts/          # React contexts
+│   ├── services/          # Business logic services
+│   ├── config/            # Configuration files
+│   └── types/             # TypeScript type definitions
+├── cypress/               # E2E tests
+├── docs/                  # Documentation
+├── .github/workflows/     # CI/CD pipelines
+└── public/               # Static assets
+```
+
+## 🔐 Authentication
+
+The application uses Firebase Authentication with the following features:
+
+- **Email/Password Authentication**
+- **Google Sign-in**
+- **Role-based Access Control**
+- **Session Management**
+- **Security Monitoring**
+
+### Default Test Accounts
+
+For development and testing, you can create test accounts with different roles:
+
+- **Admin**: Full system access
+- **Manager**: Department management access
+- **User**: Basic user access
+
+## 📊 Power BI Integration
+
+The application uses **Power BI Public Reports** via iframe embedding:
+
+### Setup Power BI Reports:
+
+1. **Create/Publish your Power BI reports** in Power BI Service
+2. **Share reports publicly** and get the share URLs
+3. **Update environment variables** in `.env.local`:
+   ```env
+   NEXT_PUBLIC_POWERBI_SALES_REPORT_URL=https://app.powerbi.com/view?r=YOUR_SALES_REPORT_TOKEN
+   NEXT_PUBLIC_POWERBI_ANALYTICS_REPORT_URL=https://app.powerbi.com/view?r=YOUR_ANALYTICS_REPORT_TOKEN
+   NEXT_PUBLIC_POWERBI_USAGE_REPORT_URL=https://app.powerbi.com/view?r=YOUR_USAGE_REPORT_TOKEN
+   ```
+4. **Restart the development server**
+
+### How to get Power BI Share URLs:
+
+1. Open your report in Power BI Service
+2. Click **File** → **Share** → **Embed** → **Publish to web**
+3. Copy the generated URL
+4. Update the corresponding environment variable
+
+**Note**: This method uses public sharing, so ensure your reports contain only non-sensitive data or implement proper access controls.
+
+## 🧪 Testing
+
+### Unit Tests
+
+```bash
+npm run test
+```
+
+### End-to-End Tests
+
+```bash
+# Interactive mode
+npm run cypress:open
+
+# Headless mode
+npm run cypress:run
+```
+
+### Test Coverage
+
+```bash
+npm run test:coverage
 ```
 
 ## 🚀 Deployment
 
-The application is configured for deployment on Vercel:
+### Vercel (Recommended)
 
-1. **Connect to Vercel**
+1. Connect your repository to Vercel
+2. Configure environment variables
+3. Deploy automatically on push to main branch
 
-   - Push your code to GitHub/GitLab
-   - Import project in Vercel
-   - Configure environment variables
+### Docker
 
-2. **Environment Variables**
-   Add all Firebase and Google Cloud credentials to Vercel environment variables
+```bash
+# Build Docker image
+docker build -t enterprise-web-app .
 
-3. **Automatic Deployment**
-   - Main branch deploys to production
-   - Pull requests create preview deployments
+# Run container
+docker run -p 3000:3000 enterprise-web-app
+```
 
-## 📊 Phase 1 Success Metrics
+### Manual Deployment
 
-### Technical KPIs
+```bash
+npm run build
+npm start
+```
 
-- ✅ Page load time: <2 seconds
-- ✅ Authentication response: <1 second
-- ✅ TypeScript coverage: 100%
-- ✅ Zero critical security vulnerabilities
+## 📈 Monitoring
 
-### User Experience
+The application includes comprehensive monitoring:
 
-- ✅ Google SSO integration working
-- ✅ Responsive design on all devices
-- ✅ Intuitive navigation and UI
-- ✅ Error handling and user feedback
+- **Health Check**: `/api/health`
+- **Performance Monitoring**: Built-in performance service
+- **Security Monitoring**: Real-time threat detection
+- **Error Tracking**: Automatic error logging
 
-## 🔮 Upcoming Features (Phase 2-4)
+## 🛠️ Development Tools
 
-### Phase 2: Core Features (Week 3-4)
+- **TypeScript**: Type safety and better development experience
+- **ESLint**: Code linting and quality
+- **Prettier**: Code formatting
+- **Husky**: Git hooks for quality control
+- **Jest**: Unit testing framework
+- **Cypress**: End-to-end testing
 
-- User management system
-- Document upload/download
-- Google Drive integration
-- Folder management
+## 🔧 Troubleshooting
 
-### Phase 3: Advanced Features (Week 5-6)
+### Common Issues
 
-- Power BI report embedding
-- Advanced permissions
-- Real-time notifications
-- Performance optimization
+1. **Firebase Connection Issues**
 
-### Phase 4: Testing & Deployment (Week 7-8)
+   - Verify your Firebase configuration
+   - Check network connectivity
+   - Ensure Firebase project is active
 
-- Comprehensive testing suite
-- Production deployment
-- User acceptance testing
-- Monitoring and documentation
+2. **Build Errors**
 
-## 🤝 Contributing
+   - Clear `.next` folder: `rm -rf .next`
+   - Clear node_modules: `rm -rf node_modules && npm install`
+   - Check for TypeScript errors: `npm run type-check`
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. **Environment Variables**
+   - Ensure all required variables are set
+   - Restart development server after changes
+   - Check variable names (case-sensitive)
+
+### Getting Help
+
+- Check the [documentation](./docs/)
+- Review existing [issues](./docs/TECHNICAL_ANALYSIS.md)
+- Contact the development team
 
 ## 📝 License
 
-This project is proprietary and confidential. All rights reserved.
+This project is proprietary and confidential.
 
-## 👥 Development Team
+## 🤝 Contributing
 
-- **Senior Developer**: Architecture, complex integrations, code review
-- **Frontend Developer**: UI/UX implementation, React components
-- **Backend Developer**: API development, database design, integrations
-- **QA Engineer/DevOps**: Testing, deployment, monitoring
+1. Create a feature branch
+2. Make your changes
+3. Add tests for new functionality
+4. Ensure all tests pass
+5. Submit a pull request
+
+---
 
 ## 📞 Support
 
 For technical support or questions:
 
-- Create an issue in the repository
+- Review the documentation in the `docs/` folder
+- Check the troubleshooting section above
 - Contact the development team
-- Check the documentation wiki
 
----
-
-**Project Status**: Phase 1 - Foundation & Core Setup ✅ In Progress
-**Last Updated**: January 2025
-**Version**: 0.1.0
+**Happy coding! 🚀**

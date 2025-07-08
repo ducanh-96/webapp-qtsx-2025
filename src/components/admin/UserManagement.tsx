@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { User, UserRole } from '@/types';
 import { userService } from '@/config/firestore';
@@ -22,7 +23,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  // Removed unused selectedUser state to fix lint error
   const [formData, setFormData] = useState<UserFormData>({
     email: '',
     displayName: '',
@@ -40,8 +41,12 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
       setLoading(true);
       const result = await userService.getUsers(50);
       setUsers(result.users);
-    } catch (error: any) {
-      setError(error.message || 'Failed to load users');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message || 'Failed to load users');
+      } else {
+        setError('Failed to load users');
+      }
     } finally {
       setLoading(false);
     }
@@ -51,7 +56,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
     e.preventDefault();
     try {
       setLoading(true);
-      
+
       // Create user in Firestore (actual user creation would be handled by backend)
       await userService.createUser({
         email: formData.email,
@@ -72,32 +77,48 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
         department: '',
       });
       setShowInviteModal(false);
-      
+
       // Reload users
       await loadUsers();
-    } catch (error: any) {
-      setError(error.message || 'Failed to invite user');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message || 'Failed to invite user');
+      } else {
+        setError('Failed to invite user');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateUser = async (user: User, updates: Partial<User>) => {
-    try {
-      await userService.updateUser(user.uid, updates);
-      await loadUsers();
-    } catch (error: any) {
-      setError(error.message || 'Failed to update user');
-    }
-  };
+  // const handleUpdateUser = async (user: User, updates: Partial<User>) => {
+  //   try {
+  //     await userService.updateUser(user.uid, updates);
+  //     await loadUsers();
+  //   } catch (error: unknown) {
+  //     if (error instanceof Error) {
+  //       setError(error.message || 'Failed to update user');
+  //     } else {
+  //       setError('Failed to update user');
+  //     }
+  //   }
+  // };
 
   const handleDeactivateUser = async (user: User) => {
-    if (window.confirm(`Are you sure you want to deactivate ${user.displayName || user.email}?`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to deactivate ${user.displayName || user.email}?`
+      )
+    ) {
       try {
         await userService.deleteUser(user.uid);
         await loadUsers();
-      } catch (error: any) {
-        setError(error.message || 'Failed to deactivate user');
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setError(error.message || 'Failed to deactivate user');
+        } else {
+          setError('Failed to deactivate user');
+        }
       }
     }
   };
@@ -143,14 +164,26 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
-          <p className="text-gray-600">Manage user accounts, roles, and permissions</p>
+          <p className="text-gray-600">
+            Manage user accounts, roles, and permissions
+          </p>
         </div>
         <button
           onClick={() => setShowInviteModal(true)}
           className="btn-primary"
         >
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          <svg
+            className="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
           </svg>
           Invite User
         </button>
@@ -174,13 +207,25 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
         <div className="card">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+              <svg
+                className="w-5 h-5 text-primary-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                />
               </svg>
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Total Users</p>
-              <p className="text-2xl font-semibold text-gray-900">{users.length}</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {users.length}
+              </p>
             </div>
           </div>
         </div>
@@ -188,8 +233,18 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
         <div className="card">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-success-100 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 text-success-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div className="ml-4">
@@ -204,8 +259,18 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
         <div className="card">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-warning-100 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-warning-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              <svg
+                className="w-5 h-5 text-warning-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
               </svg>
             </div>
             <div className="ml-4">
@@ -220,8 +285,18 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
         <div className="card">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-secondary-100 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              <svg
+                className="w-5 h-5 text-secondary-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
               </svg>
             </div>
             <div className="ml-4">
@@ -239,7 +314,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg font-medium text-gray-900">All Users</h3>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -265,20 +340,24 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {users.map((user) => (
+              {users.map(user => (
                 <tr key={user.uid} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       {user.photoURL ? (
-                        <img
+                        <Image
                           className="h-10 w-10 rounded-full"
                           src={user.photoURL}
                           alt={user.displayName || 'User'}
+                          width={40}
+                          height={40}
+                          unoptimized
                         />
                       ) : (
                         <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
                           <span className="text-sm font-medium text-primary-600">
-                            {user.displayName?.charAt(0) || user.email.charAt(0)}
+                            {user.displayName?.charAt(0) ||
+                              user.email.charAt(0)}
                           </span>
                         </div>
                       )}
@@ -286,7 +365,9 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
                         <div className="text-sm font-medium text-gray-900">
                           {user.displayName || 'No name'}
                         </div>
-                        <div className="text-sm text-gray-500">{user.email}</div>
+                        <div className="text-sm text-gray-500">
+                          {user.email}
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -302,18 +383,16 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
                     {formatDate(user.lastLoginAt)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`badge ${user.isActive ? 'badge-success' : 'badge-secondary'}`}>
+                    <span
+                      className={`badge ${
+                        user.isActive ? 'badge-success' : 'badge-secondary'
+                      }`}
+                    >
                       {user.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-2">
-                      <button
-                        onClick={() => setSelectedUser(user)}
-                        className="text-primary-600 hover:text-primary-900"
-                      >
-                        Edit
-                      </button>
                       {user.uid !== currentUser?.uid && (
                         <button
                           onClick={() => handleDeactivateUser(user)}
@@ -336,8 +415,10 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Invite New User</h3>
-              
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Invite New User
+              </h3>
+
               <form onSubmit={handleInviteUser} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -347,7 +428,9 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
                     type="email"
                     required
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                     className="input w-full"
                     placeholder="user@example.com"
                   />
@@ -361,7 +444,9 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
                     type="text"
                     required
                     value={formData.displayName}
-                    onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, displayName: e.target.value })
+                    }
                     className="input w-full"
                     placeholder="John Doe"
                   />
@@ -373,7 +458,12 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
                   </label>
                   <select
                     value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value as UserRole })}
+                    onChange={e =>
+                      setFormData({
+                        ...formData,
+                        role: e.target.value as UserRole,
+                      })
+                    }
                     className="input w-full"
                   >
                     <option value={UserRole.USER}>User</option>
@@ -389,7 +479,9 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
                   <input
                     type="text"
                     value={formData.department}
-                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, department: e.target.value })
+                    }
                     className="input w-full"
                     placeholder="Engineering"
                   />

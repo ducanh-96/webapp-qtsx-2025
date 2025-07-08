@@ -34,7 +34,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }, [user, loading, isAuthenticated, requiredRole, router, redirectTo]);
 
   // Helper function to check role hierarchy
-  const hasRequiredRole = (userRole: UserRole, requiredRole: UserRole): boolean => {
+  const hasRequiredRole = (
+    userRole: UserRole,
+    requiredRole: UserRole
+  ): boolean => {
     const roleHierarchy = {
       [UserRole.USER]: 1,
       [UserRole.MANAGER]: 2,
@@ -86,7 +89,7 @@ export const usePermissions = () => {
 
   const hasRole = (role: UserRole): boolean => {
     if (!user) return false;
-    
+
     const roleHierarchy = {
       [UserRole.USER]: 1,
       [UserRole.MANAGER]: 2,
@@ -107,25 +110,23 @@ export const usePermissions = () => {
     const permissions = {
       [UserRole.ADMIN]: {
         users: ['create', 'read', 'update', 'delete'],
-        documents: ['create', 'read', 'update', 'delete', 'share'],
         reports: ['create', 'read', 'update', 'delete'],
         system: ['read', 'update'],
       },
       [UserRole.MANAGER]: {
         users: ['read', 'update'],
-        documents: ['create', 'read', 'update', 'share'],
         reports: ['read', 'update'],
         system: ['read'],
       },
       [UserRole.USER]: {
-        documents: ['create', 'read', 'update'],
         reports: ['read'],
       },
     };
 
     const userPermissions = permissions[user.role];
-    const resourcePermissions = userPermissions?.[resource as keyof typeof userPermissions];
-    
+    const resourcePermissions =
+      userPermissions?.[resource as keyof typeof userPermissions];
+
     return resourcePermissions?.includes(action) || false;
   };
 

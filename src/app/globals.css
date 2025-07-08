@@ -18,7 +18,14 @@
   }
 
   .btn-primary {
-    @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+    @apply btn text-white;
+    background-color: #ea2227 !important;
+    border-color: #ea2227 !important;
+  }
+  .btn-primary:hover,
+  .btn-primary:focus {
+    background-color: #c71d22 !important;
+    border-color: #c71d22 !important;
   }
 
   .btn-secondary {

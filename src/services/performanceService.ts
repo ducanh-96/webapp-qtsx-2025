@@ -34,11 +34,11 @@ class PerformanceService {
   // Start timing an operation
   startTimer(name: string): () => void {
     const startTime = performance.now();
-    
+
     return () => {
       const endTime = performance.now();
       const duration = endTime - startTime;
-      
+
       this.recordMetric({
         name,
         value: duration,
@@ -52,7 +52,7 @@ class PerformanceService {
   // Record a performance metric
   recordMetric(metric: PerformanceMetric): void {
     this.metrics.push(metric);
-    
+
     // Keep only recent metrics
     if (this.metrics.length > this.maxMetricsHistory) {
       this.metrics = this.metrics.slice(-this.maxMetricsHistory);
@@ -62,7 +62,7 @@ class PerformanceService {
   // Record API call performance
   recordApiCall(apiCall: ApiCallMetric): void {
     this.apiCalls.push(apiCall);
-    
+
     // Keep only recent API calls
     if (this.apiCalls.length > this.maxApiCallsHistory) {
       this.apiCalls = this.apiCalls.slice(-this.maxApiCallsHistory);
@@ -78,20 +78,26 @@ class PerformanceService {
     const startTime = performance.now();
     let success = false;
     let status = 0;
-    
+
     try {
       const result = await apiCall();
       success = true;
       status = 200;
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       success = false;
-      status = error.status || 500;
+      status =
+        typeof error === 'object' &&
+        error !== null &&
+        'status' in error &&
+        typeof (error as { status?: number }).status === 'number'
+          ? (error as { status: number }).status
+          : 500;
       throw error;
     } finally {
       const endTime = performance.now();
       const duration = endTime - startTime;
-      
+
       this.recordApiCall({
         endpoint,
         method,
@@ -107,18 +113,19 @@ class PerformanceService {
   getStats(): PerformanceReport {
     const now = Date.now();
     const oneHourAgo = now - 60 * 60 * 1000;
-    
+
     // Filter recent metrics and API calls
     const recentMetrics = this.metrics.filter(m => m.timestamp > oneHourAgo);
     const recentApiCalls = this.apiCalls.filter(a => a.timestamp > oneHourAgo);
-    
+
     // Calculate averages
-    const avgApiResponseTime = this.calculateAverageApiResponseTime(recentApiCalls);
+    const avgApiResponseTime =
+      this.calculateAverageApiResponseTime(recentApiCalls);
     const cacheHitRate = this.getCacheHitRate();
     const pageLoadTime = this.getAveragePageLoadTime(recentMetrics);
     const memoryUsage = this.getMemoryUsage();
     const errorRate = this.calculateErrorRate(recentApiCalls);
-    
+
     const recommendations = this.generateRecommendations({
       avgApiResponseTime,
       cacheHitRate,
@@ -141,7 +148,7 @@ class PerformanceService {
   // Calculate average API response time
   private calculateAverageApiResponseTime(apiCalls: ApiCallMetric[]): number {
     if (apiCalls.length === 0) return 0;
-    
+
     const total = apiCalls.reduce((sum, call) => sum + call.duration, 0);
     return Math.round(total / apiCalls.length);
   }
@@ -152,7 +159,7 @@ class PerformanceService {
       // This would integrate with the cache service
       // For now, return a mock value
       return 85.5;
-    } catch (error) {
+    } catch {
       return 0;
     }
   }
@@ -160,18 +167,25 @@ class PerformanceService {
   // Calculate average page load time
   private getAveragePageLoadTime(metrics: PerformanceMetric[]): number {
     const pageLoadMetrics = metrics.filter(m => m.name.includes('page-load'));
-    
+
     if (pageLoadMetrics.length === 0) return 0;
-    
-    const total = pageLoadMetrics.reduce((sum, metric) => sum + metric.value, 0);
+
+    const total = pageLoadMetrics.reduce(
+      (sum, metric) => sum + metric.value,
+      0
+    );
     return Math.round(total / pageLoadMetrics.length);
   }
 
   // Get memory usage information
   private getMemoryUsage(): number {
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
-      return Math.round((memory.usedJSHeapSize / 1024 / 1024) * 100) / 100; // MB
+      const memory = (
+        performance as Performance & { memory?: { usedJSHeapSize: number } }
+      ).memory;
+      return memory
+        ? Math.round((memory.usedJSHeapSize / 1024 / 1024) * 100) / 100
+        : 0; // MB
     }
     return 0;
   }
@@ -179,7 +193,7 @@ class PerformanceService {
   // Calculate error rate
   private calculateErrorRate(apiCalls: ApiCallMetric[]): number {
     if (apiCalls.length === 0) return 0;
-    
+
     const errors = apiCalls.filter(call => !call.success).length;
     return Math.round((errors / apiCalls.length) * 100 * 100) / 100; // Percentage
   }
@@ -195,48 +209,67 @@ class PerformanceService {
     const recommendations: string[] = [];
 
     if (stats.avgApiResponseTime > 1000) {
-      recommendations.push('API response times are high. Consider optimizing database queries or adding caching.');
+      recommendations.push(
+        'API response times are high. Consider optimizing database queries or adding caching.'
+      );
     }
 
     if (stats.cacheHitRate < 70) {
-      recommendations.push('Cache hit rate is low. Review caching strategy and increase cache TTL for stable data.');
+      recommendations.push(
+        'Cache hit rate is low. Review caching strategy and increase cache TTL for stable data.'
+      );
     }
 
     if (stats.pageLoadTime > 3000) {
-      recommendations.push('Page load times are slow. Consider code splitting and lazy loading of components.');
+      recommendations.push(
+        'Page load times are slow. Consider code splitting and lazy loading of components.'
+      );
     }
 
     if (stats.memoryUsage > 50) {
-      recommendations.push('Memory usage is high. Check for memory leaks and optimize data structures.');
+      recommendations.push(
+        'Memory usage is high. Check for memory leaks and optimize data structures.'
+      );
     }
 
     if (stats.errorRate > 5) {
-      recommendations.push('Error rate is high. Review error handling and implement retry mechanisms.');
+      recommendations.push(
+        'Error rate is high. Review error handling and implement retry mechanisms.'
+      );
     }
 
     if (recommendations.length === 0) {
-      recommendations.push('Performance is good! Continue monitoring for optimal user experience.');
+      recommendations.push(
+        'Performance is good! Continue monitoring for optimal user experience.'
+      );
     }
 
     return recommendations;
   }
 
   // Get metrics by category
-  getMetricsByCategory(category: PerformanceMetric['category']): PerformanceMetric[] {
+  getMetricsByCategory(
+    category: PerformanceMetric['category']
+  ): PerformanceMetric[] {
     return this.metrics.filter(m => m.category === category);
   }
 
   // Get slowest API endpoints
-  getSlowestEndpoints(limit = 5): Array<{ endpoint: string; avgDuration: number; callCount: number }> {
-    const endpointStats = new Map<string, { totalDuration: number; count: number }>();
+  getSlowestEndpoints(
+    limit = 5
+  ): Array<{ endpoint: string; avgDuration: number; callCount: number }> {
+    const endpointStats = new Map<
+      string,
+      { totalDuration: number; count: number }
+    >();
 
     this.apiCalls.forEach(call => {
       const key = `${call.method} ${call.endpoint}`;
       const stats = endpointStats.get(key) || { totalDuration: 0, count: 0 };
-      
+
       stats.totalDuration += call.duration;
       stats.count += 1;
-      
+
       endpointStats.set(key, stats);
     });
 
@@ -251,18 +284,22 @@ class PerformanceService {
   }
 
   // Get error rates by endpoint
-  getErrorRatesByEndpoint(): Array<{ endpoint: string; errorRate: number; totalCalls: number }> {
+  getErrorRatesByEndpoint(): Array<{
+    endpoint: string;
+    errorRate: number;
+    totalCalls: number;
+  }> {
     const endpointStats = new Map<string, { errors: number; total: number }>();
 
     this.apiCalls.forEach(call => {
       const key = `${call.method} ${call.endpoint}`;
       const stats = endpointStats.get(key) || { errors: 0, total: 0 };
-      
+
       stats.total += 1;
       if (!call.success) {
         stats.errors += 1;
       }
-      
+
       endpointStats.set(key, stats);
     });
 
@@ -281,10 +318,10 @@ class PerformanceService {
     // Largest Contentful Paint (LCP)
     if ('PerformanceObserver' in window) {
       try {
-        const lcpObserver = new PerformanceObserver((list) => {
+        const lcpObserver = new PerformanceObserver(list => {
           const entries = list.getEntries();
           const lastEntry = entries[entries.length - 1];
-          
+
           this.recordMetric({
             name: 'LCP',
             value: lastEntry.startTime,
@@ -293,36 +330,43 @@ class PerformanceService {
             category: 'ui',
           });
         });
-        
+
         lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
 
         // First Input Delay (FID)
-        const fidObserver = new PerformanceObserver((list) => {
+        const fidObserver = new PerformanceObserver(list => {
           const entries = list.getEntries();
-          entries.forEach((entry: any) => {
-            this.recordMetric({
-              name: 'FID',
-              value: entry.processingStart - entry.startTime,
-              unit: 'ms',
-              timestamp: Date.now(),
-              category: 'ui',
-            });
+          entries.forEach(entry => {
+            const e = entry as PerformanceEntry & { processingStart?: number };
+            if (typeof e.processingStart === 'number') {
+              this.recordMetric({
+                name: 'FID',
+                value: e.processingStart - e.startTime,
+                unit: 'ms',
+                timestamp: Date.now(),
+                category: 'ui',
+              });
+            }
           });
         });
-        
+
         fidObserver.observe({ entryTypes: ['first-input'] });
 
         // Cumulative Layout Shift (CLS)
-        const clsObserver = new PerformanceObserver((list) => {
+        const clsObserver = new PerformanceObserver(list => {
           let clsValue = 0;
           const entries = list.getEntries();
-          
-          entries.forEach((entry: any) => {
-            if (!entry.hadRecentInput) {
-              clsValue += entry.value;
+
+          entries.forEach(entry => {
+            const e = entry as PerformanceEntry & {
+              hadRecentInput?: boolean;
+              value?: number;
+            };
+            if (!e.hadRecentInput) {
+              clsValue += e.value ?? 0;
             }
           });
-          
+
           this.recordMetric({
             name: 'CLS',
             value: clsValue,
@@ -331,7 +375,7 @@ class PerformanceService {
             category: 'ui',
           });
         });
-        
+
         clsObserver.observe({ entryTypes: ['layout-shift'] });
       } catch (error) {
         console.warn('Performance Observer not supported:', error);
@@ -356,10 +400,10 @@ class PerformanceService {
   // Initialize performance monitoring
   initialize(): void {
     console.log('Performance monitoring initialized');
-    
+
     // Monitor Core Web Vitals
     this.monitorCoreWebVitals();
-    
+
     // Record initial page load time
     if (document.readyState === 'complete') {
       this.recordPageLoadTime();
@@ -371,8 +415,9 @@ class PerformanceService {
   // Record page load time
   private recordPageLoadTime(): void {
     if (performance.timing) {
-      const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
-      
+      const loadTime =
+        performance.timing.loadEventEnd - performance.timing.navigationStart;
+
       this.recordMetric({
         name: 'page-load-time',
         value: loadTime,
