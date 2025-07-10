@@ -28,5 +28,13 @@
     "browser": true,
     "es2021": true,
     "node": true
-  }
+  },
+  "overrides": [
+    {
+      "files": ["tailwind.config.js"],
+      "rules": {
+        "@typescript-eslint/no-require-imports": "off"
+      }
+    }
+  ]
 }
