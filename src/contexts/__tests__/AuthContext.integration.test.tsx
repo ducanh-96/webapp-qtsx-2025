@@ -120,7 +120,7 @@ describe('AuthContext integration', () => {
     expect(screen.getByTestId('is-auth')).toHaveTextContent('no');
   });
 
-  it.skip('shows tiếng Việt error message for wrong password', async () => {
+  it('shows tiếng Việt error message for wrong password', async () => {
     // Consumer gọi signInWithEmail với sai mật khẩu
     function ErrorConsumer() {
       const ctx = useAuth();

@@ -64,7 +64,7 @@ describe('RootLayout', () => {
   });
 
   it('has correct metadata and viewport exports', () => {
-    expect(metadata.title).toBe('Hệ thống Báo cáo QTSX');
+    expect(metadata.title).toBe('Enterprise Web Application');
     expect(viewport.width).toBe('device-width');
   });
 });
