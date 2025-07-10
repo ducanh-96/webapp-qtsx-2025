@@ -24,9 +24,9 @@ export default defineConfig({
     pageLoadTimeout: 30000,
     env: {
       // Test environment variables
-      TEST_USER_EMAIL: 'test@example.com',
-      TEST_USER_PASSWORD: 'TestPassword123!',
-      FIREBASE_PROJECT_ID: 'demo-project',
+      TEST_USER_EMAIL: 'anhnd1@daidung.vn',
+      TEST_USER_PASSWORD: 'Adn12345@',
+      FIREBASE_PROJECT_ID: 'qtsx2025',
     },
   },
   component: {

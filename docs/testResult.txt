@@ -1,0 +1,661 @@
+-----------------------------|---------|----------|---------|---------|--------------------------------------------------------------------------------------------------------
+File                         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-----------------------------|---------|----------|---------|---------|--------------------------------------------------------------------------------------------------------
+All files                    |   53.09 |    39.38 |   52.33 |   53.39 |                                                                                                        
+ app                         |   95.45 |      100 |     100 |     100 |                                                                                                        
+  layout.tsx                 |      90 |      100 |     100 |     100 |                                                                                                        
+  not-found.tsx              |     100 |      100 |     100 |     100 |                                                                                                        
+  page.tsx                   |     100 |      100 |     100 |     100 |                                                                                                       
+ app/admin                   |   84.37 |       80 |   61.53 |   83.87 |                                                                                                       
+  page.tsx                   |   84.37 |       80 |   61.53 |   83.87 | 128-322,342-352                                                                                       
+ app/api/health              |   86.84 |    54.54 |     100 |   86.84 |                                                                                                       
+  route.ts                   |   86.84 |    54.54 |     100 |   86.84 | 70-75,98-103,174                                                                                      
+ app/auth/login              |   78.57 |       40 |   66.66 |   78.57 |                                                                                                       
+  page.tsx                   |   78.57 |       40 |   66.66 |   78.57 | 14,30-36                                                                                              
+ app/auth/signup             |   91.66 |     64.1 |     100 |   96.66 |                                                                                                       
+  page.tsx                   |   91.66 |     64.1 |     100 |   96.66 | 123,127                                                                                               
+ app/dashboard               |     100 |      100 |     100 |     100 |                                                                                                       
+  page.tsx                   |     100 |      100 |     100 |     100 |                                                                                                       
+ app/documents               |     100 |      100 |     100 |     100 |                                                                                                       
+  page.tsx                   |     100 |      100 |     100 |     100 |                                                                                                       
+ app/error-404               |     100 |      100 |     100 |     100 |                                                                                                       
+  page.tsx                   |     100 |      100 |     100 |     100 |                                                                                                       
+ app/he-thong-ghi-nhan       |     100 |      100 |     100 |     100 |                                                                                                       
+  page.tsx                   |     100 |      100 |     100 |     100 |                                                                                                       
+ app/profile                 |    6.25 |        0 |    6.66 |    5.55 |                                                                                                       
+  page.tsx                   |    6.25 |        0 |    6.66 |    5.55 | 45-62,70-349                                                                                          
+ app/reports                 |      75 |    90.32 |   64.28 |      75 |                                                                                                       
+  page.tsx                   |      75 |    90.32 |   64.28 |      75 | 92-94,97-98,112,170,211                                                                               
+ components/admin            |       0 |        0 |       0 |       0 |                                                                                                       
+  UserManagement.tsx         |       0 |        0 |       0 |       0 | 3-550                                                                                                 
+ components/auth             |   58.26 |    47.61 |   41.66 |   61.73 |                                                                                                       
+  LoginForm.tsx              |   72.36 |    59.09 |   61.53 |    72.6 | 113,171-414                                                                                           
+  ProtectedRoute.tsx         |   37.25 |    21.05 |   18.18 |   42.85 | 25-26,35-36,46-52,67,76,87,98-143                                                                     
+ components/common           |   84.44 |    66.66 |   52.38 |   85.36 |                                                                                                       
+  AppFooter.tsx              |     100 |      100 |     100 |     100 |                                                                                                       
+  AppHeader.tsx              |   63.33 |    48.14 |   36.36 |   60.71 | 64,80-84,89-90,189-219                                                                                
+  ConnectionStatus.tsx       |   88.88 |      100 |   57.14 |      96 | 55                                                                                                    
+  FooterVisibility.tsx       |     100 |    83.33 |     100 |     100 | 8                                                                                                     
+  HeaderFooterVisibility.tsx |     100 |    83.33 |     100 |     100 | 9                                                                                                     
+  HeaderVisibility.tsx       |     100 |    83.33 |     100 |     100 | 8                                                                                                     
+ components/providers        |      40 |      100 |      25 |   66.66 |                                                                                                       
+  ClientAuthProvider.tsx     |      40 |      100 |      25 |   66.66 | 9                                                                                                     
+ components/reports          |   47.58 |    54.41 |   42.85 |    47.1 |                                                                                                       
+  PowerBIIframe.tsx          |   61.36 |       80 |      50 |   60.46 | 55-65,73-76,80-90                                                                                     
+  PowerBIReport.tsx          |   41.58 |    34.21 |    40.9 |   41.05 | 49-54,59-60,105-109,126-175,184-188,199-205,211-228,280-382                                           
+ config                      |   35.71 |     2.27 |    5.88 |   38.27 |                                                                                                       
+  firebase.ts                |   45.61 |     6.66 |       0 |   48.93 | 35-43,69,77-91,111-121,127-138                                                                        
+  firestore.ts               |   21.95 |        0 |    7.69 |   23.52 | 26-147,182-198                                                                                        
+ contexts                    |   27.63 |     6.71 |      35 |   26.81 |                                                                                                       
+  AuthContext.tsx            |   27.63 |     6.71 |      35 |   26.81 | 47-60,66-70,93-253,259-273,293-311,317,319,321,323,328,333-393,407-425,442-476,488-497,505-534,543-574
+ services                    |   69.13 |    65.07 |   72.82 |   69.48 |                                                                                                       
+  cacheService.ts            |   66.26 |    66.66 |      75 |   67.94 | 38,109-110,142-173,219-239                                                                            
+  performanceService.ts      |    62.5 |    47.05 |    62.5 |   62.12 | 36-42,58,68,163,173-177,183-186,218,224,230,236,282,313,320-381,402-421                               
+  powerBiService.ts          |    90.9 |      100 |     100 |     100 |                                                                                                       
+  securityService.ts         |   75.32 |    64.91 |   84.61 |      75 | 100-102,122,135,153-154,213-220,225-232,242-249,270-274,373-382,432,443,465,497,529-560               
+-----------------------------|---------|----------|---------|---------|--------------------------------------------------------------------------------------------------------
+Jest: "global" coverage threshold for statements (80%) not met: 53.09%
+Jest: "global" coverage threshold for branches (80%) not met: 39.38%
+Jest: "global" coverage threshold for lines (80%) not met: 53.39%
+Jest: "global" coverage threshold for functions (80%) not met: 52.33%
+Summary of all failing tests
+ FAIL  src/contexts/__tests__/AuthContext.integration.test.tsx
+  ● AuthContext integration › shows tiếng Việt error message for wrong password
+
+    expect(element).toHaveTextContent()
+
+    Expected element to have text content:
+      /Email hoặc mật khẩu không đúng/i
+    Received:
+      Cannot read properties of undefined (reading 'user')
+
+      117 |     // Wait for the error message to appear
+      118 |     const errorNode = await screen.findByTestId('error');
+    > 119 |     expect(errorNode).toHaveTextContent(/Email hoặc mật khẩu không đúng/i);
+          |                       ^
+      120 |   });
+      121 | });
+
+      at Object.toHaveTextContent (src/contexts/__tests__/AuthContext.integration.test.tsx:119:23)
+
+ FAIL  src/app/profile/page.test.tsx
+  ● ProfilePage › renders user info
+
+    TypeError: Cannot destructure property 'user' of '((cov_1m2wkdf7te(...).s[40]++) , (0 , _AuthContext.useAuth)(...))' as it is undefined.
+
+      67 |
+      68 | const ProfilePage: React.FC = () => {
+    > 69 |   const { user, updateUserProfile } = useAuth();
+         |           ^
+      70 |   const [editing, setEditing] = useState(false);
+      71 |   const [displayName, setDisplayName] = useState(user?.displayName || '');
+      72 |   const [photoURL, setPhotoURL] = useState(user?.photoURL || '');
+
+      at user (src/app/profile/page.tsx:69:11)
+      at Object.react-stack-bottom-frame (node_modules/react-dom/cjs/react-dom-client.development.js:23863:20)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom-client.development.js:5529:22)
+      at updateFunctionComponent (node_modules/react-dom/cjs/react-dom-client.development.js:8897:19)
+      at beginWork (node_modules/react-dom/cjs/react-dom-client.development.js:10522:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:15140:22)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:14956:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:14936:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:14462:44)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:16216:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:566:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:859:10)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react-dom/cjs/react-dom-test-utils.development.js:22:20)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:161:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:247:10)
+      at Object.<anonymous> (src/app/profile/page.test.tsx:34:11)
+
+  ● ProfilePage › renders not logged in UI
+
+    TypeError: Cannot destructure property 'user' of '((cov_1m2wkdf7te(...).s[40]++) , (0 , _AuthContext.useAuth)(...))' as it is undefined.
+
+      67 |
+      68 | const ProfilePage: React.FC = () => {
+    > 69 |   const { user, updateUserProfile } = useAuth();
+         |           ^
+      70 |   const [editing, setEditing] = useState(false);
+      71 |   const [displayName, setDisplayName] = useState(user?.displayName || '');
+      72 |   const [photoURL, setPhotoURL] = useState(user?.photoURL || '');
+
+      at user (src/app/profile/page.tsx:69:11)
+      at Object.react-stack-bottom-frame (node_modules/react-dom/cjs/react-dom-client.development.js:23863:20)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom-client.development.js:5529:22)
+      at updateFunctionComponent (node_modules/react-dom/cjs/react-dom-client.development.js:8897:19)
+      at beginWork (node_modules/react-dom/cjs/react-dom-client.development.js:10522:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:15140:22)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:14956:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:14936:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:14462:44)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:16216:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:566:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:859:10)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react-dom/cjs/react-dom-test-utils.development.js:22:20)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:161:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:247:10)
+      at Object.<anonymous> (src/app/profile/page.test.tsx:48:11)
+
+  ● ProfilePage › shows edit form and updates profile
+
+    TypeError: Cannot destructure property 'user' of '((cov_1m2wkdf7te(...).s[40]++) , (0 , _AuthContext.useAuth)(...))' as it is undefined.
+
+      67 |
+      68 | const ProfilePage: React.FC = () => {
+    > 69 |   const { user, updateUserProfile } = useAuth();
+         |           ^
+      70 |   const [editing, setEditing] = useState(false);
+      71 |   const [displayName, setDisplayName] = useState(user?.displayName || '');
+      72 |   const [photoURL, setPhotoURL] = useState(user?.photoURL || '');
+
+      at user (src/app/profile/page.tsx:69:11)
+      at Object.react-stack-bottom-frame (node_modules/react-dom/cjs/react-dom-client.development.js:23863:20)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom-client.development.js:5529:22)
+      at updateFunctionComponent (node_modules/react-dom/cjs/react-dom-client.development.js:8897:19)
+      at beginWork (node_modules/react-dom/cjs/react-dom-client.development.js:10522:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:15140:22)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:14956:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:14936:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:14462:44)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:16216:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:566:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:859:10)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react-dom/cjs/react-dom-test-utils.development.js:22:20)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:161:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:247:10)
+      at Object.<anonymous> (src/app/profile/page.test.tsx:53:11)
+
+  ● ProfilePage › shows error on update fail
+
+    TypeError: Cannot destructure property 'user' of '((cov_1m2wkdf7te(...).s[40]++) , (0 , _AuthContext.useAuth)(...))' as it is undefined.
+
+      67 |
+      68 | const ProfilePage: React.FC = () => {
+    > 69 |   const { user, updateUserProfile } = useAuth();
+         |           ^
+      70 |   const [editing, setEditing] = useState(false);
+      71 |   const [displayName, setDisplayName] = useState(user?.displayName || '');
+      72 |   const [photoURL, setPhotoURL] = useState(user?.photoURL || '');
+
+      at user (src/app/profile/page.tsx:69:11)
+      at Object.react-stack-bottom-frame (node_modules/react-dom/cjs/react-dom-client.development.js:23863:20)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom-client.development.js:5529:22)
+      at updateFunctionComponent (node_modules/react-dom/cjs/react-dom-client.development.js:8897:19)
+      at beginWork (node_modules/react-dom/cjs/react-dom-client.development.js:10522:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:15140:22)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:14956:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:14936:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:14462:44)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:16216:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:566:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:859:10)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react-dom/cjs/react-dom-test-utils.development.js:22:20)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:161:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:247:10)
+      at Object.<anonymous> (src/app/profile/page.test.tsx:63:11)
+
+  ● ProfilePage › shows password form and validation
+
+    TypeError: Cannot destructure property 'user' of '((cov_1m2wkdf7te(...).s[40]++) , (0 , _AuthContext.useAuth)(...))' as it is undefined.
+
+      67 |
+      68 | const ProfilePage: React.FC = () => {
+    > 69 |   const { user, updateUserProfile } = useAuth();
+         |           ^
+      70 |   const [editing, setEditing] = useState(false);
+      71 |   const [displayName, setDisplayName] = useState(user?.displayName || '');
+      72 |   const [photoURL, setPhotoURL] = useState(user?.photoURL || '');
+
+      at user (src/app/profile/page.tsx:69:11)
+      at Object.react-stack-bottom-frame (node_modules/react-dom/cjs/react-dom-client.development.js:23863:20)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom-client.development.js:5529:22)
+      at updateFunctionComponent (node_modules/react-dom/cjs/react-dom-client.development.js:8897:19)
+      at beginWork (node_modules/react-dom/cjs/react-dom-client.development.js:10522:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:15140:22)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:14956:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:14936:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:14462:44)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:16216:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:566:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:859:10)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react-dom/cjs/react-dom-test-utils.development.js:22:20)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:161:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:247:10)
+      at Object.<anonymous> (src/app/profile/page.test.tsx:70:11)
+
+ FAIL  src/app/__tests__/page.test.tsx
+  ● ReportsPage › renders the reports page and tabs
+
+    TestingLibraryElementError: Found multiple elements with the text: Sản Lượng
+
+    Here are the matching elements:
+
+    Ignored nodes: comments, script, style
+    <button
+      class="py-1 sm:py-2 px-2 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap border-b-2 border-[#ea2227] text-[#ea2227]"
+    >
+      Sản Lượng
+    </button>
+
+    Ignored nodes: comments, script, style
+    <div
+      data-testid="powerbi-iframe"
+    >
+      Sản Lượng
+    </div>
+
+    (If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+    Ignored nodes: comments, script, style
+    <body>
+      <div>
+        <div
+          class="flex-1 flex flex-col min-h-0 w-full bg-gray-50"
+        >
+          <main
+            class="flex-1 flex flex-col min-h-0 w-full p-0"
+          >
+            <div
+              class="flex-1 flex flex-col min-h-0"
+            >
+              <div
+                class="flex-1 flex flex-col min-h-0"
+              >
+                <div
+                  class="flex-1 flex flex-col min-h-0"
+                >
+                  <div
+                    class="border-b border-gray-200 overflow-x-auto flex-shrink-0"
+                    style="min-height: 36px; height: 40px;"
+                  >
+                    <div
+                      class="flex flex-row items-center justify-between px-4"
+                    >
+                      <nav
+                        class="-mb-px flex flex-nowrap space-x-2 sm:space-x-4"
+                      >
+                        <button
+                          class="py-1 sm:py-2 px-2 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap border-b-2 border-[#ea2227] text-[#ea2227]"
+                        >
+                          Sản Lượng
+                        </button>
+                        <button
+                          class="py-1 sm:py-2 px-2 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-[#ea2227] hover:border-[#ea2227]"   
+                        >
+                          BC Nhân Công
+                        </button>
+                        <button
+                          class="py-1 sm:py-2 px-2 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-[#ea2227] hover:border-[#ea2227]"   
+                        >
+                          Shop Drawing
+                        </button>
+                        <button
+                          class="py-1 sm:py-2 px-2 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-[#ea2227] hover:border-[#ea2227]"
+                        >
+                          MMTB
+                        </button>
+                        <button
+                          class="py-1 sm:py-2 px-2 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-[#ea2227] hover:border-[#ea2227]"   
+                        >
+                          BC CP SX
+                        </button>
+                        <button
+                          class="py-1 sm:py-2 px-2 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-[#ea2227] hover:border-[#ea2227]"   
+                        >
+                          Vật Tư Chính
+                        </button>
+                      </nav>
+                      <div
+                        class="flex items-center gap-2 ml-4"
+                      >
+                        <label
+                          class="text-xs text-gray-600"
+                          for="iframe-height-tabs"
+                        >
+                          Chiều cao báo cáo:
+                        </label>
+                        <input
+                          class="w-32 accent-[#ea2227]"
+                          id="iframe-height-tabs"
+                          max="100"
+                          min="40"
+                          type="range"
+                          value="80"
+                        />
+                        <span
+                          class="text-xs text-[#ea2227]"
+                        >
+                          80%
+                        </span>
+                        <button
+                          aria-label="Fit height to page"
+                          class="p-1 rounded hover:bg-gray-100 ml-2"
+                          style="color: rgb(234, 34, 39);"
+                          tabindex="0"
+                          type="button"
+                        >
+                          <svg
+                            fill="none"
+                            height="18"
+                            viewBox="0 0 20 20"
+                            width="18"
+                          >
+                            <rect
+                              height="8"
+                              rx="2"
+                              stroke="currentColor"
+                              stroke-width="1.5"
+                              width="14"
+                              x="3"
+                              y="6"
+                            />
+                            <path
+                              d="M7 10h6"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-width="1.5"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex-1 flex flex-col min-h-0 p-0"
+                  >
+                    <div
+                      data-testid="powerbi-iframe"
+                    >
+                      Sản Lượng
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </body>
+
+      25 |     expect(screen.getByText('BC Nhân Công')).toBeInTheDocument();
+      26 |     // Đảm bảo assertion UI sử dụng tiếng Việt
+    > 27 |     expect(screen.getByText('Sản Lượng')).toBeInTheDocument();
+         |                   ^
+      28 |     expect(screen.getByTestId('powerbi-iframe')).toBeInTheDocument();
+      29 |   });
+      30 |
+
+      at Object.getElementError (node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/config.js:37:19)
+      at getElementError (node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/query-helpers.js:20:35)
+      at getMultipleElementsFoundError (node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/query-helpers.js:23:10)
+      at node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+      at node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByText (src/app/__tests__/page.test.tsx:27:19)
+
+ FAIL  src/app/auth/login/page.test.tsx
+  ● LoginPage › shows loading UI when loading
+
+    TestingLibraryElementError: Unable to find an element with the text: Loading.... This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    <body>
+      <div>
+        <div
+          class="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
+        >
+          <div
+            class="w-full max-w-md"
+          >
+            <div
+              data-testid="login-form"
+            >
+              LoginForm
+            </div>
+            <div
+              class="mt-8 text-center"
+            >
+              <p
+                class="text-xs text-gray-500"
+              >
+                Khi đăng nhập, bạn đồng ý với
+
+                <a
+                  class="text-primary-600 hover:text-primary-500"
+                  href="/terms"
+                >
+                  Điều khoản dịch vụ
+                </a>
+
+                và
+
+                <a
+                  class="text-primary-600 hover:text-primary-500"
+                  href="/privacy"
+                >
+                  Chính sách bảo mật
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+
+      46 |     });
+      47 |     render(<LoginPage />);
+    > 48 |     expect(screen.getByText('Loading...')).toBeInTheDocument();
+         |                   ^
+      49 |   });
+      50 |
+      51 |   it('redirects if authenticated', () => {
+
+      at Object.getElementError (node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.getByText (src/app/auth/login/page.test.tsx:48:19)
+
+  ● LoginPage › redirects if authenticated
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "/dashboard"
+
+    Number of calls: 0
+
+      56 |     });
+      57 |     render(<LoginPage />);
+    > 58 |     expect(pushMock).toHaveBeenCalledWith('/dashboard');
+         |                      ^
+      59 |   });
+      60 | });
+
+      at Object.toHaveBeenCalledWith (src/app/auth/login/page.test.tsx:58:22)
+
+ FAIL  src/app/auth/signup/page.test.tsx
+  ● SignUpPage › shows error from context
+
+    TestingLibraryElementError: Unable to find an element with the text: Lỗi đăng ký. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    <body>
+      <div>
+        <div
+          class="flex min-h-screen items-center justify-center"
+        >
+          <div
+            class="w-full max-w-md"
+          >
+            <div
+              class="card"
+            >
+              <div
+                class="text-center mb-8"
+              >
+                <h2
+                  class="text-3xl font-bold text-gray-900"
+                >
+                  Đăng ký tài khoản
+                </h2>
+                <p
+                  class="mt-2 text-gray-600"
+                >
+                  Tạo tài khoản mới để sử dụng hệ thống
+                </p>
+              </div>
+              <form
+                class="space-y-6"
+                data-testid="signup-form"
+                role="form"
+              >
+                <div>
+                  <label
+                    class="block text-sm font-medium text-gray-700 mb-2"
+                    for="email"
+                  >
+                    Địa chỉ Email
+                  </label>
+                  <div
+                    class="space-y-1"
+                  >
+                    <input
+                      class="input  "
+                      id="email"
+                      placeholder="Nhập email của bạn"
+                      required=""
+                      type="email"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    class="block text-sm font-medium text-gray-700 mb-2"
+                    for="displayName"
+                  >
+                    Tên hiển thị
+                  </label>
+                  <div
+                    class="space-y-1"
+                  >
+                    <input
+                      class="input  "
+                      id="displayName"
+                      placeholder="Nhập tên hiển thị"
+                      required=""
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    class="block text-sm font-medium text-gray-700 mb-2"
+                    for="password"
+                  >
+                    Mật khẩu
+                  </label>
+                  <div
+                    class="space-y-1"
+                  >
+                    <input
+                      class="input  "
+                      id="password"
+                      placeholder="Nhập mật khẩu"
+                      required=""
+                      type="password"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <button
+                  class="btn focus-outline transition-all duration-200 btn-primary btn-lg w-full "
+                  type="submit"
+                >
+                  Đăng ký
+                </button>
+                <span
+                  data-testid="submit-count"
+                  style="display: none;"
+                >
+                  0
+                </span>
+              </form>
+              <div
+                class="mt-6 text-center"
+              >
+                <p
+                  class="text-sm text-gray-600"
+                >
+                  Đã có tài khoản?
+
+                  <a
+                    class="font-medium text-primary-600 hover:text-primary-500"
+                    href="/auth/login"
+                  >
+                    Đăng nhập
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+
+      87 |         return import('./page').then(({ default: SignUpPageWithError }) => {
+      88 |           render(<SignUpPageWithError />);
+    > 89 |           expect(screen.getByText('Lỗi đăng ký')).toBeInTheDocument();
+         |                         ^
+      90 |         });
+      91 |     expect(screen.getByText('Lỗi đăng ký')).toBeInTheDocument();
+      92 |   });
+
+      at Object.getElementError (node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/@testing-library/react/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at getByText (src/app/auth/signup/page.test.tsx:89:25)
+
+ FAIL  src/app/__tests__/layout.test.tsx
+  ● RootLayout › has correct metadata and viewport exports
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Enterprise Web Application"
+    Received: "Hệ thống Báo cáo QTSX"
+
+      61 |
+      62 |   it('has correct metadata and viewport exports', () => {
+    > 63 |     expect(metadata.title).toBe('Enterprise Web Application');
+         |                            ^
+      64 |     expect(viewport.width).toBe('device-width');
+      65 |   });
+      66 | });
+
+      at Object.toBe (src/app/__tests__/layout.test.tsx:63:28)
+
+ FAIL  src/components/reports/__tests__/integration-reports.test.tsx
+  ● Test suite failed to run
+
+    A jest worker process (pid=10216) was terminated by another process: signal=SIGTERM, exitCode=null. Operating system logs may contain more information on why this occurred.
+
+      at ChildProcessWorker._onExit (node_modules/jest-worker/build/workers/ChildProcessWorker.js:370:23)
+
+
+Test Suites: 7 failed, 26 passed, 33 total
+Tests:       11 failed, 2 skipped, 151 passed, 164 total
+Snapshots:   0 total
+Time:        255.262 s
+Ran all test suites.

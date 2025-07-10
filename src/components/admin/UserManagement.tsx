@@ -14,7 +14,7 @@ interface UserFormData {
   email: string;
   displayName: string;
   role: UserRole;
-  department?: string;
+  nhaMay?: string;
 }
 
 const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
@@ -28,7 +28,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
     email: '',
     displayName: '',
     role: UserRole.USER,
-    department: '',
+    nhaMay: '',
   });
 
   // Load users on component mount
@@ -63,7 +63,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
         displayName: formData.displayName,
         photoURL: null,
         role: formData.role,
-        department: formData.department,
+        nhaMay: formData.nhaMay,
         createdAt: new Date(),
         updatedAt: new Date(),
         isActive: true,
@@ -74,7 +74,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
         email: '',
         displayName: '',
         role: UserRole.USER,
-        department: '',
+        nhaMay: '',
       });
       setShowInviteModal(false);
 
@@ -82,9 +82,9 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
       await loadUsers();
     } catch (error: unknown) {
       if (error instanceof Error) {
-        setError(error.message || 'Failed to invite user');
+        setError(error.message || 'Không thể mời người dùng');
       } else {
-        setError('Failed to invite user');
+        setError('Không thể mời người dùng');
       }
     } finally {
       setLoading(false);
@@ -107,18 +107,35 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
   const handleDeactivateUser = async (user: User) => {
     if (
       window.confirm(
-        `Are you sure you want to deactivate ${user.displayName || user.email}?`
+        `Bạn có chắc chắn muốn ngưng hoạt động người dùng ${
+          user.displayName || user.email
+        }?`
       )
     ) {
       try {
-        await userService.deleteUser(user.uid);
+        await userService.deleteUser(user.id);
         await loadUsers();
       } catch (error: unknown) {
         if (error instanceof Error) {
-          setError(error.message || 'Failed to deactivate user');
+          setError(error.message || 'Không thể ngưng hoạt động người dùng');
         } else {
-          setError('Failed to deactivate user');
+          setError('Không thể ngưng hoạt động người dùng');
         }
+      }
+    }
+  };
+
+  // Việt hóa thông báo khi kích hoạt lại
+
+  const handleActivateUser = async (user: User) => {
+    try {
+      await userService.updateUser(user.id, { isActive: true });
+      await loadUsers();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message || 'Không thể kích hoạt người dùng');
+      } else {
+        setError('Không thể kích hoạt người dùng');
       }
     }
   };
@@ -152,7 +169,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading users...</p>
+          <p className="text-gray-600">Đang tải danh sách người dùng...</p>
         </div>
       </div>
     );
@@ -160,17 +177,34 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
 
   return (
     <div className={`space-y-6 ${className}`}>
+      {/* Tab Navigation */}
+      <div className="flex space-x-4 bg-white rounded-lg shadow mb-4 px-4 py-4">
+        <button className="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">
+          Quản lý người dùng
+        </button>
+        <button className="text-gray-600 hover:text-blue-600 font-semibold pb-1">
+          Cài đặt hệ thống
+        </button>
+        <button className="text-gray-600 hover:text-blue-600 font-semibold pb-1">
+          Nhật ký hoạt động
+        </button>
+        <button className="text-gray-600 hover:text-blue-600 font-semibold pb-1">
+          Tình trạng API
+        </button>
+      </div>
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center bg-white rounded-lg shadow p-4 mb-2">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Quản lý người dùng
+          </h2>
           <p className="text-gray-600">
-            Manage user accounts, roles, and permissions
+            Quản lý tài khoản, vai trò và quyền truy cập
           </p>
         </div>
         <button
           onClick={() => setShowInviteModal(true)}
-          className="btn-primary"
+          className="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow transition"
         >
           <svg
             className="w-4 h-4 mr-2"
@@ -185,7 +219,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
               d="M12 6v6m0 0v6m0-6h6m-6 0H6"
             />
           </svg>
-          Invite User
+          Mời người dùng
         </button>
       </div>
 
@@ -197,7 +231,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
             onClick={() => setError(null)}
             className="text-error-800 hover:text-error-900 text-sm font-medium mt-2"
           >
-            Dismiss
+            Đóng
           </button>
         </div>
       )}
@@ -222,7 +256,9 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Total Users</p>
+              <p className="text-sm font-medium text-gray-500">
+                Tổng số người dùng
+              </p>
               <p className="text-2xl font-semibold text-gray-900">
                 {users.length}
               </p>
@@ -248,7 +284,9 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Active Users</p>
+              <p className="text-sm font-medium text-gray-500">
+                Đang hoạt động
+              </p>
               <p className="text-2xl font-semibold text-gray-900">
                 {users.filter(u => u.isActive).length}
               </p>
@@ -274,7 +312,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Admins</p>
+              <p className="text-sm font-medium text-gray-500">Quản trị viên</p>
               <p className="text-2xl font-semibold text-gray-900">
                 {users.filter(u => u.role === UserRole.ADMIN).length}
               </p>
@@ -300,7 +338,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Managers</p>
+              <p className="text-sm font-medium text-gray-500">Quản lý</p>
               <p className="text-2xl font-semibold text-gray-900">
                 {users.filter(u => u.role === UserRole.MANAGER).length}
               </p>
@@ -312,36 +350,38 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
       {/* Users Table */}
       <div className="card overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">All Users</h3>
+          <h3 className="text-lg font-medium text-gray-900">
+            Tất cả người dùng
+          </h3>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 rounded-lg shadow-sm overflow-hidden">
+            <thead className="bg-gray-100">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  User
+                <th className="px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Người dùng
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Role
+                <th className="px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Vai trò
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Department
+                <th className="px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Nhà máy
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Login
+                <th className="px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Đăng nhập cuối
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                <th className="px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Trạng thái
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
+                <th className="px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Thao tác
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-100">
               {users.map(user => (
-                <tr key={user.uid} className="hover:bg-gray-50">
+                <tr key={user.id} className="hover:bg-gray-50 transition">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       {user.photoURL ? (
@@ -363,7 +403,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
                       )}
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
-                          {user.displayName || 'No name'}
+                          {user.displayName || 'Không tên'}
                         </div>
                         <div className="text-sm text-gray-500">
                           {user.email}
@@ -372,12 +412,20 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`badge ${getRoleBadgeColor(user.role)}`}>
-                      {user.role}
+                    <span
+                      className={`badge ${getRoleBadgeColor(
+                        user.role as UserRole
+                      )}`}
+                    >
+                      {user.role === 'admin'
+                        ? 'Quản trị viên'
+                        : user.role === 'manager'
+                        ? 'Quản lý'
+                        : 'Người dùng'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {user.department || 'No department'}
+                    {user.nhaMay || 'Chưa có'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {formatDate(user.lastLoginAt)}
@@ -388,19 +436,27 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
                         user.isActive ? 'badge-success' : 'badge-secondary'
                       }`}
                     >
-                      {user.isActive ? 'Active' : 'Inactive'}
+                      {user.isActive ? 'Đang hoạt động' : 'Ngưng hoạt động'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-2">
-                      {user.uid !== currentUser?.uid && (
-                        <button
-                          onClick={() => handleDeactivateUser(user)}
-                          className="text-error-600 hover:text-error-900"
-                        >
-                          {user.isActive ? 'Deactivate' : 'Activate'}
-                        </button>
-                      )}
+                      {user.id !== currentUser?.id &&
+                        (user.isActive ? (
+                          <button
+                            onClick={() => handleDeactivateUser(user)}
+                            className="rounded px-3 py-1 bg-red-100 text-red-700 hover:bg-red-200 transition"
+                          >
+                            Deactivate
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleActivateUser(user)}
+                            className="rounded px-3 py-1 bg-green-100 text-green-700 hover:bg-green-200 transition"
+                          >
+                            Activate
+                          </button>
+                        ))}
                     </div>
                   </td>
                 </tr>
@@ -416,13 +472,13 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div className="mt-3">
               <h3 className="text-lg font-medium text-gray-900 mb-4">
-                Invite New User
+                Mời người dùng mới
               </h3>
 
               <form onSubmit={handleInviteUser} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address
+                    Địa chỉ email
                   </label>
                   <input
                     type="email"
@@ -432,13 +488,13 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
                       setFormData({ ...formData, email: e.target.value })
                     }
                     className="input w-full"
-                    placeholder="user@example.com"
+                    placeholder="nguoidung@congty.com"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Display Name
+                    Tên hiển thị
                   </label>
                   <input
                     type="text"
@@ -448,13 +504,13 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
                       setFormData({ ...formData, displayName: e.target.value })
                     }
                     className="input w-full"
-                    placeholder="John Doe"
+                    placeholder="Nguyễn Văn A"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Role
+                    Vai trò
                   </label>
                   <select
                     value={formData.role}
@@ -466,24 +522,24 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
                     }
                     className="input w-full"
                   >
-                    <option value={UserRole.USER}>User</option>
-                    <option value={UserRole.MANAGER}>Manager</option>
-                    <option value={UserRole.ADMIN}>Admin</option>
+                    <option value={UserRole.USER}>Người dùng</option>
+                    <option value={UserRole.MANAGER}>Quản lý</option>
+                    <option value={UserRole.ADMIN}>Quản trị viên</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Department (Optional)
+                    Nhà máy (không bắt buộc)
                   </label>
                   <input
                     type="text"
-                    value={formData.department}
+                    value={formData.nhaMay}
                     onChange={e =>
-                      setFormData({ ...formData, department: e.target.value })
+                      setFormData({ ...formData, nhaMay: e.target.value })
                     }
                     className="input w-full"
-                    placeholder="Engineering"
+                    placeholder="Nhà máy A"
                   />
                 </div>
 
@@ -493,14 +549,14 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
                     onClick={() => setShowInviteModal(false)}
                     className="btn-outline"
                   >
-                    Cancel
+                    Hủy
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
                     className="btn-primary"
                   >
-                    {loading ? 'Inviting...' : 'Send Invitation'}
+                    {loading ? 'Đang mời...' : 'Gửi lời mời'}
                   </button>
                 </div>
               </form>
@@ -513,3 +569,23 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
 };
 
 export default UserManagement;
+
+{
+  /* System Health Section */
+}
+<div className="mt-8 bg-white rounded-lg shadow p-4 flex flex-col items-center space-y-2">
+  <h3 className="text-lg font-bold text-gray-900 mb-2">System Health</h3>
+  <div className="flex flex-row space-x-8">
+    <div className="flex flex-col items-center">
+      <span className="text-sm text-gray-500">Database</span>
+      <span className="text-green-600 font-semibold">Online</span>
+    </div>
+    <div className="flex flex-col items-center">
+      <span className="text-sm text-gray-500">API Status</span>
+      <span className="text-green-600 font-semibold">Active</span>
+    </div>
+  </div>
+  <span className="mt-2 px-3 py-1 rounded-full bg-green-100 text-green-700 font-semibold">
+    Healthy
+  </span>
+</div>;

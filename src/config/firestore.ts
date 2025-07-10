@@ -37,12 +37,14 @@ export const userService = {
     if (userDoc.exists()) {
       const data = userDoc.data();
       return {
-        uid: userDoc.id,
-        email: data.email,
+        id: userDoc.id,
+        name: data.displayName || '',
+        email: data.email || '',
+        role: data.role || UserRole.USER,
+        // preserve other fields for compatibility
         displayName: data.displayName,
         photoURL: data.photoURL,
-        role: data.role,
-        department: data.department,
+        nhaMay: data.nhaMay,
         createdAt: data.createdAt?.toDate(),
         updatedAt: data.updatedAt?.toDate(),
         lastLoginAt: data.lastLoginAt?.toDate(),
@@ -69,11 +71,18 @@ export const userService = {
 
     const snapshot = await getDocs(q);
     const users = snapshot.docs.map(doc => ({
-      uid: doc.id,
-      ...doc.data(),
+      id: doc.id,
+      name: doc.data().displayName || '',
+      email: doc.data().email || '',
+      role: doc.data().role || UserRole.USER,
+      // preserve other fields for compatibility
+      displayName: doc.data().displayName,
+      photoURL: doc.data().photoURL,
+      nhaMay: doc.data().nhaMay,
       createdAt: doc.data().createdAt?.toDate(),
       updatedAt: doc.data().updatedAt?.toDate(),
       lastLoginAt: doc.data().lastLoginAt?.toDate(),
+      isActive: doc.data().isActive,
     })) as User[];
 
     return {
@@ -110,30 +119,44 @@ export const userService = {
 
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => ({
-      uid: doc.id,
-      ...doc.data(),
+      id: doc.id,
+      name: doc.data().displayName || '',
+      email: doc.data().email || '',
+      role: doc.data().role || UserRole.USER,
+      // preserve other fields for compatibility
+      displayName: doc.data().displayName,
+      photoURL: doc.data().photoURL,
+      nhaMay: doc.data().nhaMay,
       createdAt: doc.data().createdAt?.toDate(),
       updatedAt: doc.data().updatedAt?.toDate(),
       lastLoginAt: doc.data().lastLoginAt?.toDate(),
+      isActive: doc.data().isActive,
     })) as User[];
   },
 
-  // Get users by department
-  async getUsersByDepartment(department: string): Promise<User[]> {
+  // Get users by nhaMay
+  async getUsersByNhaMay(nhaMay: string): Promise<User[]> {
     const q = query(
       collection(db, COLLECTIONS.USERS),
-      where('department', '==', department),
+      where('nhaMay', '==', nhaMay),
       where('isActive', '==', true),
       orderBy('displayName')
     );
 
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => ({
-      uid: doc.id,
-      ...doc.data(),
+      id: doc.id,
+      name: doc.data().displayName || '',
+      email: doc.data().email || '',
+      role: doc.data().role || UserRole.USER,
+      // preserve other fields for compatibility
+      displayName: doc.data().displayName,
+      photoURL: doc.data().photoURL,
+      nhaMay: doc.data().nhaMay,
       createdAt: doc.data().createdAt?.toDate(),
       updatedAt: doc.data().updatedAt?.toDate(),
       lastLoginAt: doc.data().lastLoginAt?.toDate(),
+      isActive: doc.data().isActive,
     })) as User[];
   },
 };

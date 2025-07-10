@@ -12,5 +12,7 @@ export default function HeaderVisibility() {
 
   if (hide) return null;
 
-  return <AppHeader />;
+  // Ẩn header text nếu là trang /error-404
+  const hideHeaderText = pathname === '/error-404';
+  return <AppHeader hideHeaderText={hideHeaderText} />;
 }

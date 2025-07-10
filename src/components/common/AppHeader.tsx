@@ -2,7 +2,9 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePathname } from 'next/navigation';
 
 type UserAvatarProps = {
   src?: string;
@@ -64,17 +66,15 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
   );
 };
 
-const AppHeader: React.FC = () => {
+interface AppHeaderProps {
+  hideHeaderText?: boolean;
+}
+
+const AppHeader: React.FC<AppHeaderProps> = ({ hideHeaderText }) => {
   const { user, signOut } = useAuth();
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-
-  // DEBUG LOG: Check user and photoURL
-  React.useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log('[Avatar Debug] user:', user);
-    // eslint-disable-next-line no-console
-    console.log('[Avatar Debug] user.photoURL:', user?.photoURL);
-  }, [user]);
+  const pathname = usePathname();
+  const isHome = pathname === '/';
 
   const handleSignOut = async () => {
     setShowUserDropdown(false);
@@ -87,13 +87,10 @@ const AppHeader: React.FC = () => {
 
   const handleViewProfile = () => {
     setShowUserDropdown(false);
-    alert('View profile (chức năng này cần được hiện thực)');
+    window.location.href = '/profile';
   };
 
-  const handleUpdateProfile = () => {
-    setShowUserDropdown(false);
-    alert('Update profile (chức năng này cần được hiện thực)');
-  };
+  // Đã loại bỏ chức năng Update Profile vì đã tích hợp vào View Profile
 
   return (
     <nav
@@ -104,19 +101,44 @@ const AppHeader: React.FC = () => {
         <div className="flex flex-row justify-between items-center h-12">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <Image
-                src="/logo.png"
-                alt="Company Logo"
-                width={48}
-                height={45}
-                className="h-[45px] w-12 sm:h-[45px] sm:w-12 rounded-lg object-contain"
-                priority
-              />
+              {isHome ? (
+                <span>
+                  <Image
+                    src="/logo.png"
+                    alt="Company Logo"
+                    width={48}
+                    height={45}
+                    className="h-[45px] w-12 sm:h-[45px] sm:w-12 rounded-lg object-contain"
+                    priority
+                  />
+                </span>
+              ) : (
+                <span>
+                  <Image
+                    src="/logo.png"
+                    alt="Company Logo"
+                    width={48}
+                    height={45}
+                    className="h-[45px] w-12 sm:h-[45px] sm:w-12 rounded-lg object-contain"
+                    priority
+                  />
+                </span>
+              )}
             </div>
             <div className="ml-2 sm:ml-4">
-              <h1 className="text-base sm:text-lg font-semibold text-white">
-                Báo cáo Quản trị Sản xuất
-              </h1>
+              {!hideHeaderText && (
+                <span className="text-base sm:text-lg font-semibold text-white">
+                  {pathname === '/'
+                    ? 'Báo cáo Quản trị Sản xuất'
+                    : pathname === '/he-thong-ghi-nhan'
+                    ? 'Hệ thống ghi nhận'
+                    : pathname.startsWith('/admin')
+                    ? 'Cửa sổ quản trị viên'
+                    : pathname.startsWith('/profile')
+                    ? 'Chi tiết thông tin người dùng'
+                    : 'Báo cáo Quản trị Sản xuất'}
+                </span>
+              )}
             </div>
           </div>
 
@@ -161,31 +183,49 @@ const AppHeader: React.FC = () => {
                     <div className="px-4 py-2 text-xs text-gray-500 border-b">
                       {user?.email}
                     </div>
+                    <Link
+                      href="/"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setShowUserDropdown(false)}
+                    >
+                      Báo cáo Quản trị Sản xuất
+                    </Link>
+                    <Link
+                      href="/he-thong-ghi-nhan"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setShowUserDropdown(false)}
+                    >
+                      Hệ thống Ghi nhận
+                    </Link>
+                    <a
+                      href="https://script.google.com/macros/s/AKfycbzfx31v_rphNEaZhVs3thaKP6Nd4vlgACp3TBBT0hHchaoF-B7M4eu11J6c4djyZ-i2/exec"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setShowUserDropdown(false)}
+                    >
+                      Hệ thống BC QTSC Dự Án
+                    </a>
                     <button
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={handleViewProfile}
                     >
-                      View Profile
-                    </button>
-                    <button
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={handleUpdateProfile}
-                    >
-                      Update Profile
+                      Thông tin tài khoản
                     </button>
                     {user?.role === 'admin' && (
-                      <a
+                      <Link
                         href="/admin"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setShowUserDropdown(false)}
                       >
-                        Admin
-                      </a>
+                        Quản trị viên
+                      </Link>
                     )}
                     <button
                       className="w-full text-left px-4 py-2 text-sm text-error-700 hover:bg-error-50"
                       onClick={handleSignOut}
                     >
-                      Sign Out
+                      Đăng xuất
                     </button>
                   </div>
                 </div>

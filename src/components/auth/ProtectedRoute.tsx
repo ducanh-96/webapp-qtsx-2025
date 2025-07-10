@@ -26,7 +26,12 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         return;
       }
 
-      if (requiredRole && user && !hasRequiredRole(user.role, requiredRole)) {
+      if (
+        requiredRole &&
+        user &&
+        typeof user.role === 'string' &&
+        !hasRequiredRole(user.role as UserRole, requiredRole)
+      ) {
         router.push('/unauthorized');
         return;
       }
@@ -62,7 +67,12 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return null; // Will redirect
   }
 
-  if (requiredRole && user && !hasRequiredRole(user.role, requiredRole)) {
+  if (
+    requiredRole &&
+    user &&
+    typeof user.role === 'string' &&
+    !hasRequiredRole(user.role as UserRole, requiredRole)
+  ) {
     return null; // Will redirect to unauthorized
   }
 
@@ -96,7 +106,7 @@ export const usePermissions = () => {
       [UserRole.ADMIN]: 3,
     };
 
-    return roleHierarchy[user.role] >= roleHierarchy[role];
+    return roleHierarchy[user.role as UserRole] >= roleHierarchy[role];
   };
 
   const isAdmin = (): boolean => hasRole(UserRole.ADMIN);
@@ -123,7 +133,7 @@ export const usePermissions = () => {
       },
     };
 
-    const userPermissions = permissions[user.role];
+    const userPermissions = permissions[user.role as UserRole];
     const resourcePermissions =
       userPermissions?.[resource as keyof typeof userPermissions];
 

@@ -95,15 +95,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userDoc = await getDoc(userRef);
 
       const defaultUser: User = {
-        uid: firebaseUser.uid,
+        id: firebaseUser.uid,
+        name: firebaseUser.displayName || '',
         email: firebaseUser.email!,
-        displayName: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL,
         role: UserRole.USER,
+        // preserve other fields for compatibility
+        displayName: firebaseUser.displayName ?? undefined,
+        photoURL: firebaseUser.photoURL ?? undefined,
         createdAt: new Date(),
         updatedAt: new Date(),
         lastLoginAt: new Date(),
         isActive: true,
+        nhaMay: '', // Thông tin Nhà máy mặc định rỗng
       };
 
       if (userDoc.exists()) {
@@ -146,12 +149,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         }
         return {
-          uid: firebaseUser.uid,
+          id: firebaseUser.uid,
+          name: userData.displayName || firebaseUser.displayName || '',
           email: firebaseUser.email!,
-          displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL,
           role: userData.role || UserRole.USER,
+          // preserve other fields for compatibility
+          displayName: userData.displayName || firebaseUser.displayName,
+          photoURL: userData.photoURL || firebaseUser.photoURL,
           department: userData.department,
+          nhaMay: userData.nhaMay || '', // Ensure nhaMay is always included
           createdAt: userData.createdAt?.toDate() || new Date(),
           updatedAt: userData.updatedAt?.toDate() || new Date(),
           lastLoginAt: userData.lastLoginAt?.toDate(),
@@ -208,11 +214,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           'Working offline - using basic user profile from Firebase Auth'
         );
         return {
-          uid: firebaseUser.uid,
+          id: firebaseUser.uid,
+          name: firebaseUser.displayName || '',
           email: firebaseUser.email!,
-          displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL,
           role: UserRole.USER,
+          // preserve other fields for compatibility
+          displayName: firebaseUser.displayName ?? undefined,
+          photoURL: firebaseUser.photoURL ?? undefined,
           createdAt: new Date(),
           updatedAt: new Date(),
           isActive: true,
@@ -230,11 +238,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           'Working offline - using basic user profile from Firebase Auth'
         );
         return {
-          uid: firebaseUser.uid,
+          id: firebaseUser.uid,
+          name: firebaseUser.displayName || '',
           email: firebaseUser.email!,
-          displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL,
           role: UserRole.USER,
+          // preserve other fields for compatibility
+          displayName: firebaseUser.displayName ?? undefined,
+          photoURL: firebaseUser.photoURL ?? undefined,
           createdAt: new Date(),
           updatedAt: new Date(),
           isActive: true,
@@ -372,7 +382,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       if (user) {
-        await updateLastLogin(user.uid);
+        await updateLastLogin(user.id);
         setUser(user);
       }
     } catch (error) {
@@ -411,7 +421,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       if (user) {
-        await updateLastLogin(user.uid);
+        await updateLastLogin(user.id);
         setUser(user);
       }
     } catch (error) {
@@ -500,7 +510,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      await updateDoc(doc(db, COLLECTIONS.USERS, user.uid), {
+      await updateDoc(doc(db, COLLECTIONS.USERS, user.id), {
         ...data,
         updatedAt: new Date(),
       });

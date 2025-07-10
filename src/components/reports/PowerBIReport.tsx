@@ -93,8 +93,8 @@ const PowerBIReport: React.FC<PowerBIReportProps> = ({
           },
           permissions: 7,
           filters: powerBiService.createUserFilters(
-            user.uid,
-            user.role,
+            user.id,
+            user.role ?? '',
             user.department
           ),
         };
@@ -318,10 +318,10 @@ const PowerBIReport: React.FC<PowerBIReportProps> = ({
       <div className="flex justify-between items-center mb-4 p-3 bg-gray-50 rounded-t-lg border border-b-0 border-gray-200">
         <div className="flex items-center space-x-3">
           <h3 className="text-sm font-medium text-gray-900">Power BI Report</h3>
-          <div className="flex items-center space-x-1 text-xs text-success-600">
+          {/* <div className="flex items-center space-x-1 text-xs text-success-600">
             <div className="w-2 h-2 bg-success-500 rounded-full"></div>
             <span>Live Data</span>
-          </div>
+          </div> */}
         </div>
 
         <div className="flex items-center space-x-2">

@@ -218,11 +218,13 @@ const PowerBIIframe: React.FC<PowerBIIframeProps> = ({
             }}
           >
             <div className="flex items-center space-x-3">
-              <h3 className="text-sm font-medium text-gray-900">{title}</h3>
-              <div className="flex items-center space-x-1 text-xs text-success-600">
+              <h3 className="text-sm font-medium text-gray-900">
+                Báo cáo phân hệ: {title}
+              </h3>
+              {/* <div className="flex items-center space-x-1 text-xs text-success-600">
                 <div className="w-2 h-2 bg-success-500 rounded-full"></div>
                 <span>Live Data</span>
-              </div>
+              </div> */}
             </div>
             <div className="flex items-center gap-3">
               <button

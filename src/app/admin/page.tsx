@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { UserRole } from '@/types';
 import UserManagement from '@/components/admin/UserManagement';
@@ -36,7 +35,8 @@ interface HealthCheckResponse {
 }
 
 function AdminDashboardContent() {
-  const { user, signOut } = useAuth();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { signOut } = useAuth();
 
   const [healthData, setHealthData] = useState<HealthCheckResponse | null>(
     null
@@ -68,120 +68,18 @@ function AdminDashboardContent() {
 
   const closeModal = () => setSelectedCard(null);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      console.error('Sign out error:', error);
-    }
-  };
+  // const handleSignOut = async () => {
+  //   try {
+  //     await signOut();
+  //   } catch (error) {
+  //     console.error('Sign out error:', error);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="h-8 w-8 bg-error-600 rounded-lg flex items-center justify-center">
-                  <svg
-                    className="h-5 w-5 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <div className="ml-4">
-                <h1 className="text-lg font-semibold text-gray-900">
-                  Admin Dashboard
-                </h1>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
-                {user?.photoURL ? (
-                  <Image
-                    className="h-8 w-8 rounded-full"
-                    src={user.photoURL}
-                    alt={user.displayName || 'User'}
-                    width={32}
-                    height={32}
-                    unoptimized
-                  />
-                ) : (
-                  <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                    <span className="text-sm font-medium text-primary-600">
-                      {user?.displayName?.charAt(0) ||
-                        user?.email?.charAt(0) ||
-                        'A'}
-                    </span>
-                  </div>
-                )}
-                <div className="hidden md:block">
-                  <p className="text-sm font-medium text-gray-900">
-                    {user?.displayName || 'Admin'}
-                  </p>
-                  <p className="text-xs text-error-600 font-medium">
-                    {user?.role}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <a href="/dashboard" className="btn-outline btn-sm">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                    />
-                  </svg>
-                  Dashboard
-                </a>
-                <button onClick={handleSignOut} className="btn-outline btn-sm">
-                  Sign Out
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className="mb-8">
-            <div className="bg-gradient-to-r from-error-500 to-error-600 rounded-lg p-6 text-white">
-              <h2 className="text-2xl font-bold mb-2">
-                Welcome to Admin Panel
-              </h2>
-              <p className="text-error-100">
-                Manage users, configure system settings, and monitor application
-                health.
-              </p>
-              <div className="mt-4 flex items-center space-x-2 text-sm">
-                <div className="w-2 h-2 bg-success-400 rounded-full animate-pulse"></div>
-                <span>Phase 2 - Core Features Development</span>
-              </div>
-            </div>
-          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* System Health Card */}
             <div

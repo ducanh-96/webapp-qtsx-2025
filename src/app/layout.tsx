@@ -1,18 +1,19 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+/* Switched to local font to avoid external fetches */
+import './globals.css';
 import './globals.css';
 import ClientAuthProvider from '@/components/providers/ClientAuthProvider';
 import ConnectionStatus from '@/components/common/ConnectionStatus';
 import HeaderVisibility from '@/components/common/HeaderVisibility';
 import FooterVisibility from '@/components/common/FooterVisibility';
 
-const inter = Inter({ subsets: ['latin'] });
+/* Removed Google Fonts import and usage */
 
 export const metadata: Metadata = {
-  title: 'Enterprise Web Application',
-  description: 'Enterprise Web Application with Google Workspace Integration',
-  keywords: 'enterprise, web application, google workspace',
-  authors: [{ name: 'Development Team' }],
+  title: 'Hệ thống Báo cáo QTSX',
+  description: 'Hệ thống Báo cáo Quản trị Sản xuất DDC',
+  keywords: 'DDC, web app, google workspace',
+  authors: [{ name: 'Nguyễn Đức Anh - Ban KSNB' }],
 };
 
 export const viewport = {
@@ -31,7 +32,10 @@ export default function RootLayout({
 
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
-      <body className={`${inter.className} h-full antialiased`}>
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+      </head>
+      <body className="h-full antialiased">
         <ConnectionStatus />
         <ClientAuthProvider>
           <div id="root" className="min-h-full flex flex-col min-h-screen">

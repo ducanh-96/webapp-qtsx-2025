@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { LoginForm } from '../LoginForm';
-import AuthProvider from '../../../contexts/AuthContext';
+import { AuthProvider } from '../../../contexts/AuthContext';
 import type { User } from '../../../types/index';
 
 // Mock the AuthContext
@@ -13,7 +13,7 @@ let mockError: string | null = null;
 let mockLoading = false;
 let mockUser: User | null = null;
 
-jest.mock('../../contexts/AuthContext', () => ({
+jest.mock('../../../contexts/AuthContext', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),
@@ -52,35 +52,39 @@ describe('LoginForm', () => {
     it('should render login form with all required fields', () => {
       renderLoginForm();
 
-      expect(screen.getByText('Welcome back')).toBeInTheDocument();
-      expect(screen.getByText('Sign in to your account')).toBeInTheDocument();
-      expect(screen.getByLabelText('Email address')).toBeInTheDocument();
-      expect(screen.getByLabelText('Password')).toBeInTheDocument();
       expect(
-        screen.getByRole('button', { name: /sign in$/i })
+        screen.getByText('Hệ thống Báo cáo Quản trị Sản xuất')
       ).toBeInTheDocument();
-      expect(screen.getByText('Sign in with Google')).toBeInTheDocument();
+      expect(
+        screen.getByText('Quản lý báo cáo QTSX DDC 2025')
+      ).toBeInTheDocument();
+      expect(screen.getByLabelText('Địa chỉ Email')).toBeInTheDocument();
+      expect(screen.getByLabelText('Mật khẩu')).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /đăng nhập$/i })
+      ).toBeInTheDocument();
+      expect(screen.getByText('Đăng nhập với Google')).toBeInTheDocument();
     });
 
     it('should render remember me checkbox', () => {
       renderLoginForm();
 
-      expect(screen.getByLabelText('Remember me')).toBeInTheDocument();
+      expect(screen.getByLabelText('Ghi nhớ đăng nhập')).toBeInTheDocument();
     });
 
     it('should render forgot password link', () => {
       renderLoginForm();
 
-      expect(screen.getByText('Forgot your password?')).toBeInTheDocument();
+      expect(screen.getByText('Quên mật khẩu?')).toBeInTheDocument();
     });
 
     it('should render sign up toggle when onToggleMode is provided', () => {
       const mockToggleMode = jest.fn();
       renderLoginForm({ onToggleMode: mockToggleMode });
 
-      expect(screen.getByText("Don't have an account?")).toBeInTheDocument();
+      expect(screen.getByText('Chưa có tài khoản?')).toBeInTheDocument();
       expect(
-        screen.getByRole('button', { name: 'Sign up' })
+        screen.getByRole('button', { name: 'Đăng ký' })
       ).toBeInTheDocument();
     });
   });
@@ -93,8 +97,8 @@ describe('LoginForm', () => {
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(screen.getByText('Email is required')).toBeInTheDocument();
-        expect(screen.getByText('Password is required')).toBeInTheDocument();
+        expect(screen.getByText('Vui lòng nhập email')).toBeInTheDocument();
+        expect(screen.getByText('Vui lòng nhập mật khẩu')).toBeInTheDocument();
       });
 
       expect(mockSignInWithEmail).not.toHaveBeenCalled();
@@ -103,14 +107,14 @@ describe('LoginForm', () => {
     it('should show email validation error for invalid email', async () => {
       renderLoginForm();
 
-      const emailInput = screen.getByLabelText('Email address');
+      const emailInput = screen.getByLabelText('Địa chỉ Email');
       const form = screen.getByRole('form');
 
       fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(screen.getByText('Email is invalid')).toBeInTheDocument();
+        expect(screen.getByText('Email không hợp lệ')).toBeInTheDocument();
       });
 
       expect(mockSignInWithEmail).not.toHaveBeenCalled();
@@ -119,8 +123,8 @@ describe('LoginForm', () => {
     it('should show password validation error for short password', async () => {
       renderLoginForm();
 
-      const emailInput = screen.getByLabelText('Email address');
-      const passwordInput = screen.getByLabelText('Password');
+      const emailInput = screen.getByLabelText('Địa chỉ Email');
+      const passwordInput = screen.getByLabelText('Mật khẩu');
       const form = screen.getByRole('form');
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
@@ -129,7 +133,7 @@ describe('LoginForm', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('Password must be at least 6 characters')
+          screen.getByText('Mật khẩu phải có ít nhất 6 ký tự')
         ).toBeInTheDocument();
       });
 
@@ -142,9 +146,9 @@ describe('LoginForm', () => {
       mockSignInWithEmail.mockResolvedValue(undefined);
       renderLoginForm();
 
-      const emailInput = screen.getByLabelText('Email address');
-      const passwordInput = screen.getByLabelText('Password');
-      const submitButton = screen.getByRole('button', { name: /sign in$/i });
+      const emailInput = screen.getByLabelText('Địa chỉ Email');
+      const passwordInput = screen.getByLabelText('Mật khẩu');
+      const submitButton = screen.getByRole('button', { name: /đăng nhập$/i });
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
@@ -164,9 +168,9 @@ describe('LoginForm', () => {
 
       renderLoginForm();
 
-      const emailInput = screen.getByLabelText('Email address');
-      const passwordInput = screen.getByLabelText('Password');
-      const submitButton = screen.getByRole('button', { name: /sign in$/i });
+      const emailInput = screen.getByLabelText('Địa chỉ Email');
+      const passwordInput = screen.getByLabelText('Mật khẩu');
+      const submitButton = screen.getByRole('button', { name: /đăng nhập$/i });
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
@@ -183,7 +187,7 @@ describe('LoginForm', () => {
       mockSignInWithGoogle.mockResolvedValue(undefined);
       renderLoginForm();
 
-      const googleButton = screen.getByText('Sign in with Google');
+      const googleButton = screen.getByText('Đăng nhập với Google');
       fireEvent.click(googleButton);
 
       await waitFor(() => {
@@ -197,7 +201,7 @@ describe('LoginForm', () => {
       );
       renderLoginForm();
 
-      const googleButton = screen.getByText('Sign in with Google');
+      const googleButton = screen.getByText('Đăng nhập với Google');
       fireEvent.click(googleButton);
 
       await waitFor(() => {
@@ -211,7 +215,7 @@ describe('LoginForm', () => {
       const mockToggleMode = jest.fn();
       renderLoginForm({ onToggleMode: mockToggleMode });
 
-      const signUpButton = screen.getByRole('button', { name: 'Sign up' });
+      const signUpButton = screen.getByRole('button', { name: 'Đăng ký' });
       fireEvent.click(signUpButton);
 
       expect(mockToggleMode).toHaveBeenCalled();
@@ -221,10 +225,10 @@ describe('LoginForm', () => {
       renderLoginForm();
 
       const emailInput = screen.getByLabelText(
-        'Email address'
+        'Địa chỉ Email'
       ) as HTMLInputElement;
       const passwordInput = screen.getByLabelText(
-        'Password'
+        'Mật khẩu'
       ) as HTMLInputElement;
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
@@ -238,7 +242,7 @@ describe('LoginForm', () => {
       renderLoginForm();
 
       const rememberMeCheckbox = screen.getByLabelText(
-        'Remember me'
+        'Ghi nhớ đăng nhập'
       ) as HTMLInputElement;
 
       expect(rememberMeCheckbox.checked).toBe(false);
@@ -258,9 +262,9 @@ describe('LoginForm', () => {
       );
       renderLoginForm();
 
-      const emailInput = screen.getByLabelText('Email address');
-      const passwordInput = screen.getByLabelText('Password');
-      const submitButton = screen.getByRole('button', { name: /sign in$/i });
+      const emailInput = screen.getByLabelText('Địa chỉ Email');
+      const passwordInput = screen.getByLabelText('Mật khẩu');
+      const submitButton = screen.getByRole('button', { name: /đăng nhập$/i });
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
@@ -291,25 +295,24 @@ describe('LoginForm', () => {
       renderLoginForm();
 
       expect(screen.getByRole('form')).toBeInTheDocument();
-      expect(screen.getByLabelText('Email address')).toHaveAttribute(
+      expect(screen.getByLabelText('Địa chỉ Email')).toHaveAttribute(
         'type',
         'email'
       );
-      expect(screen.getByLabelText('Password')).toHaveAttribute(
+      expect(screen.getByLabelText('Mật khẩu')).toHaveAttribute(
         'type',
         'password'
       );
-      expect(screen.getByRole('button', { name: /sign in$/i })).toHaveAttribute(
-        'type',
-        'submit'
-      );
+      expect(
+        screen.getByRole('button', { name: /đăng nhập$/i })
+      ).toHaveAttribute('type', 'submit');
     });
 
     it('should have proper form validation attributes', () => {
       renderLoginForm();
 
-      const emailInput = screen.getByLabelText('Email address');
-      const passwordInput = screen.getByLabelText('Password');
+      const emailInput = screen.getByLabelText('Địa chỉ Email');
+      const passwordInput = screen.getByLabelText('Mật khẩu');
 
       expect(emailInput).toHaveAttribute('required');
       expect(passwordInput).toHaveAttribute('required');
