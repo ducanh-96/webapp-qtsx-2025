@@ -321,7 +321,7 @@ function AdminDashboardContent() {
                   }`}
                   onClick={() => setActiveTab('user')}
                 >
-                  User Management
+                  Quản lý người dùng
                 </button>
                 <button
                   className={`py-4 px-1 border-b-2 ${
@@ -331,7 +331,7 @@ function AdminDashboardContent() {
                   }`}
                   onClick={() => setActiveTab('settings')}
                 >
-                  System Settings
+                  Cài đặt hệ thống
                 </button>
                 <button
                   className={`py-4 px-1 border-b-2 ${
@@ -341,7 +341,7 @@ function AdminDashboardContent() {
                   }`}
                   onClick={() => setActiveTab('logs')}
                 >
-                  Audit Logs
+                  Nhật ký hoạt động
                 </button>
                 <button
                   className={`py-4 px-1 border-b-2 ${
@@ -351,7 +351,7 @@ function AdminDashboardContent() {
                   }`}
                   onClick={() => setActiveTab('api')}
                 >
-                  API Health
+                  Tình trạng API
                 </button>
               </nav>
             </div>

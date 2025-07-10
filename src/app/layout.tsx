@@ -10,7 +10,7 @@ import FooterVisibility from '@/components/common/FooterVisibility';
 /* Removed Google Fonts import and usage */
 
 export const metadata: Metadata = {
-  title: 'Hệ thống Báo cáo QTSX',
+  title: 'Enterprise Web Application',
   description: 'Hệ thống Báo cáo Quản trị Sản xuất DDC',
   keywords: 'DDC, web app, google workspace',
   authors: [{ name: 'Nguyễn Đức Anh - Ban KSNB' }],

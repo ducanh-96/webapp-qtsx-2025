@@ -177,21 +177,6 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {/* Tab Navigation */}
-      <div className="flex space-x-4 bg-white rounded-lg shadow mb-4 px-4 py-4">
-        <button className="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">
-          Quản lý người dùng
-        </button>
-        <button className="text-gray-600 hover:text-blue-600 font-semibold pb-1">
-          Cài đặt hệ thống
-        </button>
-        <button className="text-gray-600 hover:text-blue-600 font-semibold pb-1">
-          Nhật ký hoạt động
-        </button>
-        <button className="text-gray-600 hover:text-blue-600 font-semibold pb-1">
-          Tình trạng API
-        </button>
-      </div>
       {/* Header */}
       <div className="flex justify-between items-center bg-white rounded-lg shadow p-4 mb-2">
         <div>
