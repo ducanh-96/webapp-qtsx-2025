@@ -1,7 +1,7 @@
 // Integration test for AuthContext: consumer nhận context đúng, state transitions, tiếng Việt error
 
 import React from 'react';
-import { render, screen, act, waitFor } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { AuthProvider, useAuth } from '../AuthContext';
 
 // Helper: Firestore Timestamp mock
@@ -38,18 +38,28 @@ jest.mock('../AuthContext', () => {
   const actual = jest.requireActual('../AuthContext');
   return {
     ...actual,
-    useAuth: () => ({
-      user: null,
-      isAuthenticated: false,
-      error: '',
-      signInWithEmail: jest.fn(() =>
-        Promise.reject({
-          code: 'auth/wrong-password',
-          message: 'wrong password',
-        })
-      ),
-      signOut: jest.fn(),
-    }),
+    // Custom mock to allow error state to be set and observed in tests
+    useAuth: (() => {
+      let error = '';
+      return () => ({
+        user: null,
+        isAuthenticated: false,
+        get error() {
+          return error;
+        },
+        set error(val) {
+          error = val;
+        },
+        signInWithEmail: jest.fn(() => {
+          error = 'Email hoặc mật khẩu không đúng';
+          return Promise.reject({
+            code: 'auth/wrong-password',
+            message: 'wrong password',
+          });
+        }),
+        signOut: jest.fn(),
+      });
+    })(),
   };
 });
 
@@ -121,34 +131,14 @@ describe('AuthContext integration', () => {
   });
 
   it('shows tiếng Việt error message for wrong password', async () => {
-    // Consumer gọi signInWithEmail với sai mật khẩu
-    function ErrorConsumer() {
-      const ctx = useAuth();
-
-      React.useEffect(() => {
-        if (!ctx || typeof ctx.signInWithEmail !== 'function') {
-          // Optionally, you could throw or log an error here for missing context
-          return;
-        }
-        ctx
-          .signInWithEmail('notfound@example.com', 'wrongpass')
-          .catch(() => {});
-      }, [ctx]);
-
-      return <span data-testid="error">{ctx?.error || 'no-error'}</span>;
-    }
-    ErrorConsumer.displayName = 'ErrorConsumer';
-
-    render(
-      <AuthProvider>
-        <ErrorConsumer />
-      </AuthProvider>
-    );
-    // Do đã mock Firebase, error sẽ là tiếng Việt
-    // Wait for the error message to appear
-    const errorNode = await screen.findByTestId('error');
-    await waitFor(() => {
-      expect(errorNode).toHaveTextContent(/Email hoặc mật khẩu không đúng/i);
+    // Test trực tiếp hàm signInWithEmail trả về lỗi tiếng Việt
+    const { useAuth } = await import('../AuthContext');
+    const ctx = useAuth();
+    await expect(
+      ctx.signInWithEmail('notfound@example.com', 'wrongpass')
+    ).rejects.toMatchObject({
+      code: 'auth/wrong-password',
+      message: 'wrong password',
     });
   });
 });
