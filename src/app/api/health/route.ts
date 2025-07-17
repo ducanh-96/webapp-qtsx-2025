@@ -166,13 +166,10 @@ export async function GET(_request: NextRequest) {
 }
 
 // Lightweight health check for load balancers
-export async function HEAD(
-  _request: NextRequest,
-  ResponseClass: typeof NextResponse = NextResponse
-) {
+export async function HEAD(_request: NextRequest) {
   try {
     // Simple health check that just returns 200 if the service is running
-    return new ResponseClass(null, { status: 200 });
+    return new NextResponse(null, { status: 200 });
   } catch {
     // If NextResponse throws, fall back to native Response
     return new Response(null, { status: 503 });

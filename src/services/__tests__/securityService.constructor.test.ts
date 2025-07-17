@@ -3,6 +3,7 @@ describe('SecurityService constructor setInterval (98-103)', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const spy = jest
       .spyOn(global, 'setInterval')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .mockImplementation(() => 123 as any);
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { SecurityService } = require('../securityService');

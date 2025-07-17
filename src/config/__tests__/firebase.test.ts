@@ -102,9 +102,11 @@ describe('firebase config', () => {
     jest.resetModules();
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const connectFirestoreEmulator =
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       require('firebase/firestore').connectFirestoreEmulator;
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const connectFunctionsEmulator =
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       require('firebase/functions').connectFunctionsEmulator;
     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     await import('../firebase');
@@ -139,6 +141,7 @@ describe('firebase config', () => {
     jest.resetModules();
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const connectFirestoreEmulator =
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       require('firebase/firestore').connectFirestoreEmulator;
     connectFirestoreEmulator.mockImplementation(() => {
       throw new Error('fail');

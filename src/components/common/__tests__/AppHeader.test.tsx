@@ -137,6 +137,7 @@ describe('AppHeader', () => {
   it('renders fallback header text for unknown route', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     jest
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       .spyOn(require('next/navigation'), 'usePathname')
       .mockReturnValue('/unknown');
     render(<AppHeader />);
@@ -162,6 +163,7 @@ describe('AppHeader', () => {
   it('renders correct header text for /admin', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     jest
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       .spyOn(require('next/navigation'), 'usePathname')
       .mockReturnValue('/admin');
     render(<AppHeader />);
@@ -171,6 +173,7 @@ describe('AppHeader', () => {
   it('renders correct header text for /profile', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     jest
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       .spyOn(require('next/navigation'), 'usePathname')
       .mockReturnValue('/profile');
     render(<AppHeader />);

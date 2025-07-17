@@ -471,6 +471,7 @@ describe('SecurityService', () => {
         const alerts = (securityService as any).securityAlerts;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expect(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           alerts.some((a: any) => a.message && a.message.includes(email))
         ).toBe(true);
       });
@@ -525,6 +526,7 @@ describe('SecurityService', () => {
         const alerts = (securityService as any).securityAlerts;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expect(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           alerts.some((a: any) => a.message && a.message.includes(email))
         ).toBe(true);
       });
@@ -539,6 +541,7 @@ describe('SecurityService', () => {
         const alerts = (securityService as any).securityAlerts;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expect(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           alerts.some((a: any) => a.type === 'medium' || a.type === 'high')
         ).toBe(true);
       });
@@ -571,6 +574,7 @@ describe('SecurityService', () => {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (securityService as any).securityEvents.length
       ).toBeLessThanOrEqual(1000);
     });

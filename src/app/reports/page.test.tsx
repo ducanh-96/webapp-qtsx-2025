@@ -116,7 +116,7 @@ it('covers fallback report name', () => {
   // Import ReportsPageContent directly to control state for coverage
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { ReportsPageContent } = require('./page');
+  const { ReportsPageContent } = require('./ReportsPageContent');
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { render } = require('@testing-library/react');
   // Render ReportsPageContent and simulate selectedReportId not matching any report

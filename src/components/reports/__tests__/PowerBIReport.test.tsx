@@ -129,6 +129,7 @@ describe('PowerBIReport - coverage extensions', () => {
   it('handles missing user gracefully', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     jest
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       .spyOn(require('@/contexts/AuthContext'), 'useAuth')
       .mockReturnValue({ user: null });
     render(<PowerBIReport reportId="abc123" />);
@@ -138,6 +139,7 @@ describe('PowerBIReport - coverage extensions', () => {
     beforeEach(() => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       jest
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         .spyOn(require('@/contexts/AuthContext'), 'useAuth')
         .mockReturnValue({ user: stableUser });
     });
@@ -185,8 +187,8 @@ describe('PowerBIReport - coverage extensions', () => {
 });
 
 it('covers user.role undefined (branch at line 97)', async () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   jest
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     .spyOn(require('@/contexts/AuthContext'), 'useAuth')
     .mockReturnValue({ user: { ...stableUser, role: undefined } });
   render(<PowerBIReport reportId="abc123" />);
@@ -195,8 +197,8 @@ it('covers user.role undefined (branch at line 97)', async () => {
 });
 
 it('covers non-Error thrown in embed config (branch at line 107)', async () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   jest
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     .spyOn(require('@/contexts/AuthContext'), 'useAuth')
     .mockReturnValue({ user: stableUser });
   const originalCreateUserFilters = powerBiService.createUserFilters;
@@ -211,8 +213,8 @@ it('covers non-Error thrown in embed config (branch at line 107)', async () => {
 });
 
 it('covers non-Error thrown in embed (branch at line 173)', async () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   jest
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     .spyOn(require('@/contexts/AuthContext'), 'useAuth')
     .mockReturnValue({ user: stableUser });
   const onError = jest.fn();
@@ -247,8 +249,8 @@ it('covers non-Error thrown in embed (branch at line 173)', async () => {
   // No assertion needed, just coverage for catch
 });
 it('covers error event with falsy errorMessage (lines 152, 157, 158)', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   jest
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     .spyOn(require('@/contexts/AuthContext'), 'useAuth')
     .mockReturnValue({ user: stableUser });
   const onError = jest.fn();
@@ -270,8 +272,8 @@ it('covers error event with falsy errorMessage (lines 152, 157, 158)', () => {
 });
 
 it('covers embed catch with non-Error thrown (line 173)', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   jest
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     .spyOn(require('@/contexts/AuthContext'), 'useAuth')
     .mockReturnValue({ user: stableUser });
   const onError = jest.fn();
@@ -292,8 +294,8 @@ it('covers embed catch with non-Error thrown (line 173)', () => {
 });
 
 it('renders fallback error message in UI for falsy errorMessage (lines 157, 158)', async () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   jest
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     .spyOn(require('@/contexts/AuthContext'), 'useAuth')
     .mockReturnValue({ user: stableUser });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -316,8 +318,8 @@ it('renders fallback error message in UI for falsy errorMessage (lines 157, 158)
 });
 
 it.skip('covers error in Power BI reset during cleanup (line 188)', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   jest
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     .spyOn(require('@/contexts/AuthContext'), 'useAuth')
     .mockReturnValue({ user: stableUser });
   const resetMock = jest.fn(() => {
@@ -330,8 +332,8 @@ it.skip('covers error in Power BI reset during cleanup (line 188)', () => {
 });
 
 it('covers refreshReport and error in refresh (lines 198-205)', async () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   jest
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     .spyOn(require('@/contexts/AuthContext'), 'useAuth')
     .mockReturnValue({ user: stableUser });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -360,8 +362,8 @@ it('covers refreshReport and error in refresh (lines 198-205)', async () => {
 });
 
 it('covers exportReport and download logic (lines 218-226)', async () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   jest
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     .spyOn(require('@/contexts/AuthContext'), 'useAuth')
     .mockReturnValue({ user: stableUser });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

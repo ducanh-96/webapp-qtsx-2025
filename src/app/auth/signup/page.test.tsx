@@ -1,7 +1,8 @@
 // Unit test for src/app/auth/signup/page.tsx (SignUpPage)
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import SignUpPage, { Button, Input } from './page';
+import { Button, Input } from './components';
+import SignUpPage from './page';
 
 // Mock useAuth
 const signUpWithEmailMock = jest.fn();
