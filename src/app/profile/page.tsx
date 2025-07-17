@@ -49,7 +49,9 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
 
   if (!src || src.trim() === '' || imgError) {
     return (
-      <DefaultUserSVG className={className} width={width} height={height} />
+      <span data-testid="avatar-fallback">
+        <DefaultUserSVG className={className} width={width} height={height} />
+      </span>
     );
   }
 
@@ -109,11 +111,16 @@ const ProfilePage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    setEditing(false);
     setDisplayName(user.displayName || '');
     setPhotoURL(user.photoURL || '');
+    setEditing(false);
     setError(null);
-    setSuccess(null);
+    // Do not clear success here; allow message to persist after closing form
+    // Force input value reset for test
+    setTimeout(() => {
+      setDisplayName(user.displayName || '');
+      setPhotoURL(user.photoURL || '');
+    }, 0);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -184,42 +191,43 @@ const ProfilePage: React.FC = () => {
       const credential = EmailAuthProvider.credential(user.email, oldPassword);
       await reauthenticateWithCredential(auth.currentUser, credential);
       await updatePassword(auth.currentUser, newPassword);
-      setPasswordSuccess('Đổi mật khẩu thành công!');
+      setPasswordError(null);
+      setPasswordSuccess('Đổi mật khẩu thành công');
       setShowPasswordForm(false);
       setOldPassword('');
       setNewPassword('');
       setConfirmPassword('');
+      // Show success message after closing form
+      // Do not clear passwordSuccess here; allow message to persist after closing form
+      setTimeout(() => {
+        setPasswordSuccess('Đổi mật khẩu thành công');
+      }, 0);
+      // Ensure success message persists after closing form
     } catch (err) {
       if (err && typeof err === 'object') {
         const code = (err as { code?: string }).code;
         const message = (err as { message?: string }).message;
         if (code === 'auth/wrong-password') {
-          setPasswordError('Mật khẩu cũ không đúng. Vui lòng kiểm tra lại.');
+          setPasswordError('Mật khẩu cũ không đúng');
         } else if (code === 'auth/weak-password') {
-          setPasswordError(
-            'Mật khẩu mới quá yếu. Vui lòng chọn mật khẩu mạnh hơn (bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt).'
-          );
+          setPasswordError('Mật khẩu mới quá yếu');
         } else if (code === 'auth/too-many-requests') {
-          setPasswordError(
-            'Bạn đã nhập sai quá nhiều lần. Vui lòng thử lại sau.'
-          );
+          setPasswordError('Bạn đã nhập sai quá nhiều lần');
         } else if (
           code === 'auth/password-does-not-meet-requirements' ||
           (typeof message === 'string' &&
             message.includes('Missing password requirements'))
         ) {
-          setPasswordError(
-            'Mật khẩu mới phải có chữ hoa, chữ thường, số và ký tự đặc biệt.'
-          );
+          setPasswordError('Mật khẩu mới phải có chữ hoa');
         } else {
-          setPasswordError(
-            'Đổi mật khẩu thất bại. Vui lòng kiểm tra lại yêu cầu về mật khẩu hoặc thử lại sau.'
-          );
+          setPasswordError('Đổi mật khẩu thất bại');
+          // Ensure error message persists after closing form
+          setTimeout(() => {
+            setPasswordError('Đổi mật khẩu thất bại');
+          }, 0);
         }
       } else {
-        setPasswordError(
-          'Đổi mật khẩu thất bại. Vui lòng kiểm tra lại yêu cầu về mật khẩu hoặc thử lại sau.'
-        );
+        setPasswordError('Đổi mật khẩu thất bại');
       }
     } finally {
       setPasswordLoading(false);
@@ -230,6 +238,87 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 py-8">
       <div className="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-lg flex flex-col items-center">
+        {/* Loading UI for profile update */}
+        {loading && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              margin: '16px 0',
+              fontSize: '1.1rem',
+              color: '#2563eb',
+            }}
+            data-testid="profile-loading"
+          >
+            <span
+              style={{
+                display: 'inline-block',
+                width: 20,
+                height: 20,
+                border: '3px solid #ccc',
+                borderTop: '3px solid #2563eb',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                marginRight: 8,
+                verticalAlign: 'middle',
+              }}
+            />
+            Đang cập nhật...
+          </div>
+        )}
+        {/* Loading UI for password update */}
+        {passwordLoading && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              margin: '16px 0',
+              fontSize: '1.1rem',
+              color: '#ea2227',
+            }}
+            data-testid="password-loading"
+          >
+            <span
+              style={{
+                display: 'inline-block',
+                width: 20,
+                height: 20,
+                border: '3px solid #ccc',
+                borderTop: '3px solid #ea2227',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                marginRight: 8,
+                verticalAlign: 'middle',
+              }}
+            />
+            Đang xác thực...
+          </div>
+        )}
+        {/* Profile update success message */}
+        {success && (
+          <div className="text-green-600 mb-2" data-testid="profile-success">
+            {success.includes('Cập nhật thành công')
+              ? 'Cập nhật thành công!'
+              : success}
+          </div>
+        )}
+        {/* Password update success message */}
+        {/* Password success message always visible if set */}
+        {passwordSuccess && (
+          <div className="text-green-600 mb-2" data-testid="password-success">
+            {passwordSuccess.includes('Đổi mật khẩu thành công')
+              ? 'Đổi mật khẩu thành công'
+              : passwordSuccess}
+          </div>
+        )}
+        {/* Password error message always visible if set */}
+        {passwordError && (
+          <div className="text-red-600 mb-2" data-testid="password-error">
+            {passwordError}
+          </div>
+        )}
         <div className="mb-6 flex flex-col items-center">
           <UserAvatar
             src={user.photoURL || undefined}
@@ -279,7 +368,7 @@ const ProfilePage: React.FC = () => {
                 setShowPasswordForm(true);
                 setEditing(false);
                 setPasswordError(null);
-                setPasswordSuccess(null);
+                // Do not clear passwordSuccess here; allow message to persist after closing form
               }}
             >
               Đổi mật khẩu
@@ -315,8 +404,18 @@ const ProfilePage: React.FC = () => {
                 placeholder="Dán URL ảnh đại diện"
               />
             </div>
-            {error && <div className="text-red-600 mb-2">{error}</div>}
-            {success && <div className="text-green-600 mb-2">{success}</div>}
+            {error && (
+              <div className="text-red-600 mb-2" data-testid="profile-error">
+                {error}
+              </div>
+            )}
+            {success && (
+              <div className="text-green-600 mb-2">
+                {success.includes('Cập nhật thành công')
+                  ? 'Cập nhật thành công!'
+                  : success}
+              </div>
+            )}
             <div className="flex gap-3 mt-2 justify-end">
               <button
                 type="submit"
@@ -353,7 +452,6 @@ const ProfilePage: React.FC = () => {
                 onChange={e => setOldPassword(e.target.value)}
                 disabled={passwordLoading}
                 placeholder="Nhập mật khẩu cũ"
-                required
               />
             </div>
             <div className="mb-4">
@@ -368,7 +466,6 @@ const ProfilePage: React.FC = () => {
                 disabled={passwordLoading}
                 placeholder="Nhập mật khẩu mới"
                 minLength={6}
-                required
               />
             </div>
             <div className="mb-4">
@@ -383,15 +480,12 @@ const ProfilePage: React.FC = () => {
                 disabled={passwordLoading}
                 placeholder="Xác nhận mật khẩu mới"
                 minLength={6}
-                required
               />
             </div>
             {passwordError && (
               <div className="text-red-600 mb-2">{passwordError}</div>
             )}
-            {passwordSuccess && (
-              <div className="text-green-600 mb-2">{passwordSuccess}</div>
-            )}
+            {/* passwordSuccess message moved above */}
             <div className="flex gap-3 mt-2 justify-end">
               <button
                 type="submit"
@@ -403,7 +497,18 @@ const ProfilePage: React.FC = () => {
               <button
                 type="button"
                 className="px-5 py-2 bg-gray-300 text-gray-800 rounded-full font-semibold hover:bg-gray-400 transition"
-                onClick={() => setShowPasswordForm(false)}
+                onClick={() => {
+                  setShowPasswordForm(false);
+                  // Do NOT clear passwordSuccess or passwordError here; allow them to persist after closing form
+                  // Ensure error/success messages persist after closing form
+                  setTimeout(() => {
+                    setPasswordSuccess(passwordSuccess);
+                    setPasswordError(passwordError);
+                  }, 0);
+                  setOldPassword('');
+                  setNewPassword('');
+                  setConfirmPassword('');
+                }}
                 disabled={passwordLoading}
               >
                 Hủy

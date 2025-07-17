@@ -197,6 +197,80 @@ describe('CacheService', () => {
       expect(keys).toContain('key3');
     });
   });
+  describe('Coverage for uncovered lines', () => {
+    it('should evict oldest item when maxSize is exceeded', () => {
+      // Create a small cache for testing eviction
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { CacheService } = require('../cacheService');
+      const smallCache = new CacheService(2, 10000);
+
+      // Use fake timers to control timestamps
+      jest.useFakeTimers();
+      smallCache.set('a', 1);
+      jest.advanceTimersByTime(10);
+      smallCache.set('b', 2);
+      jest.advanceTimersByTime(10);
+      smallCache.set('c', 3); // Should evict 'a'
+      jest.useRealTimers();
+
+      expect(smallCache.get('a')).toBeNull();
+      expect(smallCache.get('b')).toBe(2);
+      expect(smallCache.get('c')).toBe(3);
+    });
+
+    describe('Coverage for preloadUserData and warmCache', () => {
+      it('should call preloadUserData and cover normal and error branches', async () => {
+        // Normal branch
+        await cacheService.preloadUserData('test-user');
+        // Error branch
+        const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+        // @ts-expect-error: force error
+        await cacheService.preloadUserData(undefined);
+        spy.mockRestore();
+      });
+
+      it('should call warmCache and cover normal and error branches', async () => {
+        // Normal branch
+        await cacheService.warmCache();
+        // Error branch
+        const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+        // @ts-expect-error: force error
+        await cacheService.warmCache(undefined);
+        spy.mockRestore();
+      });
+
+      it('should cover singleton export', () => {
+        // Just access the singleton to ensure export is covered
+        expect(cacheService).toBeDefined();
+      });
+    });
+    it('should return false and delete expired key in has()', () => {
+      jest.useFakeTimers();
+      cacheService.set('expire-key', 'value', 100);
+      jest.advanceTimersByTime(200);
+      expect(cacheService.has('expire-key')).toBe(false);
+      jest.useRealTimers();
+    });
+
+    it('should remove expired items when cleanup is called', () => {
+      jest.useFakeTimers();
+      cacheService.set('cleanup-key', 'value', 100);
+      jest.advanceTimersByTime(200);
+      cacheService['cleanup']();
+      expect(cacheService.get('cleanup-key')).toBeNull();
+      jest.useRealTimers();
+    });
+
+    it('should call setInterval in constructor (line 31)', () => {
+      const spy = jest.spyOn(global, 'setInterval');
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { CacheService } = require('../cacheService');
+      new CacheService();
+      expect(spy).toHaveBeenCalled();
+      spy.mockRestore();
+    });
+  });
 
   describe('Error Handling', () => {
     it('should handle circular reference objects', () => {

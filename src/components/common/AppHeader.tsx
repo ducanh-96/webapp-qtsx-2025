@@ -239,3 +239,4 @@ const AppHeader: React.FC<AppHeaderProps> = ({ hideHeaderText }) => {
 };
 
 export default AppHeader;
+export { UserAvatar, DefaultUserSVG };

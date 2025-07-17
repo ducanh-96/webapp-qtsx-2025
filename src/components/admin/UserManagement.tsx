@@ -10,6 +10,19 @@ interface UserManagementProps {
   className?: string;
 }
 
+export function getRoleBadgeColor(role: UserRole) {
+  switch (role) {
+    case UserRole.ADMIN:
+      return 'badge-error';
+    case UserRole.MANAGER:
+      return 'badge-warning';
+    case UserRole.USER:
+      return 'badge-primary';
+    default:
+      return 'badge-secondary';
+  }
+}
+
 interface UserFormData {
   email: string;
   displayName: string;
@@ -137,19 +150,6 @@ const UserManagement: React.FC<UserManagementProps> = ({ className = '' }) => {
       } else {
         setError('Không thể kích hoạt người dùng');
       }
-    }
-  };
-
-  const getRoleBadgeColor = (role: UserRole) => {
-    switch (role) {
-      case UserRole.ADMIN:
-        return 'badge-error';
-      case UserRole.MANAGER:
-        return 'badge-warning';
-      case UserRole.USER:
-        return 'badge-primary';
-      default:
-        return 'badge-secondary';
     }
   };
 

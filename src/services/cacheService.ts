@@ -243,6 +243,7 @@ class CacheService {
 
 // Export singleton instance
 export const cacheService = new CacheService();
+export { CacheService };
 export default cacheService;
 
 // Export types

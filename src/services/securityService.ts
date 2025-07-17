@@ -561,7 +561,9 @@ class SecurityService {
       }
     }
   }
+  // Export class for testing
 }
+export { SecurityService };
 
 // Export singleton instance
 export const securityService = new SecurityService();

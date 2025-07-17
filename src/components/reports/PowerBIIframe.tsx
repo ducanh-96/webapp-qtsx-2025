@@ -147,7 +147,7 @@ const PowerBIIframe: React.FC<PowerBIIframeProps> = ({
             />
           </svg>
           <h3 className="text-lg font-medium text-error-900 mb-2">
-            Report Load Failed
+            Failed to load Power BI report
           </h3>
           <p className="text-error-600 mb-4">{error}</p>
           <button

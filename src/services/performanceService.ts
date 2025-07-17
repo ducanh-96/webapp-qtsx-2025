@@ -249,8 +249,9 @@ class PerformanceService {
 
   // Get metrics by category
   getMetricsByCategory(
-    category: PerformanceMetric['category']
+    category?: PerformanceMetric['category']
   ): PerformanceMetric[] {
+    if (!category) return this.metrics;
     return this.metrics.filter(m => m.category === category);
   }
 

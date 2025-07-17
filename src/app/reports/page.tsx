@@ -11,7 +11,7 @@ interface PowerBIReportInfo {
   description?: string;
 }
 
-function ReportsPageContent() {
+export function ReportsPageContent() {
   // const { user, signOut } = useAuth(); // user, signOut are currently unused
   const [reports, setReports] = useState<PowerBIReportInfo[]>([]);
   const [selectedReportId, setSelectedReportId] = useState<string>('');
