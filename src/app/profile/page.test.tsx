@@ -1,8 +1,11 @@
 // Unit test for src/app/profile/page.tsx
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { UserAvatar, DefaultUserSVG } from './UserAvatar';
 import ProfilePage from './page';
 import { reauthenticateWithCredential, updatePassword } from 'firebase/auth';
+
+import { act } from '@testing-library/react';
 
 // Mock firebase/auth functions globally
 jest.mock('firebase/auth', () => ({
@@ -395,5 +398,67 @@ describe('ProfilePage', () => {
     expect(screen.getByTestId('password-error')).toHaveTextContent(
       'Đổi mật khẩu thất bại'
     );
+  });
+
+  // Additional tests for UserAvatar and DefaultUserSVG to improve coverage
+
+  describe('UserAvatar and DefaultUserSVG', () => {
+    it('renders DefaultUserSVG with default props', () => {
+      const { container } = render(<DefaultUserSVG />);
+      const svg = container.querySelector('svg');
+      expect(svg).toBeInTheDocument();
+      expect(svg).toHaveAttribute('width', '112');
+      expect(svg).toHaveAttribute('height', '112');
+    });
+
+    it('renders DefaultUserSVG with custom props', () => {
+      const { container } = render(
+        <DefaultUserSVG className="foo" width={50} height={60} />
+      );
+      const svg = container.querySelector('svg');
+      expect(svg).toHaveAttribute('class', 'foo');
+      expect(svg).toHaveAttribute('width', '50');
+      expect(svg).toHaveAttribute('height', '60');
+    });
+
+    it('renders UserAvatar fallback when src is undefined', () => {
+      const { getByTestId } = render(<UserAvatar alt="test" />);
+      expect(getByTestId('avatar-fallback')).toBeInTheDocument();
+    });
+
+    it('renders UserAvatar fallback when src is empty string', () => {
+      const { getByTestId } = render(<UserAvatar src="" alt="test" />);
+      expect(getByTestId('avatar-fallback')).toBeInTheDocument();
+    });
+
+    it('renders UserAvatar fallback when image fails to load', () => {
+      const { getByRole, getByTestId } = render(
+        <UserAvatar src="broken.jpg" alt="test" />
+      );
+      const img = getByRole('img');
+      // Use act from @testing-library/react (already imported)
+      act(() => {
+        img.dispatchEvent(new Event('error'));
+      });
+      expect(getByTestId('avatar-fallback')).toBeInTheDocument();
+    });
+
+    it('renders UserAvatar image when src is valid', () => {
+      const { getByRole } = render(<UserAvatar src="avatar.jpg" alt="test" />);
+      const img = getByRole('img');
+      expect(img).toHaveAttribute('src', 'avatar.jpg');
+      expect(img).toHaveAttribute('alt', 'test');
+      expect(img).toHaveAttribute('width', '112');
+      expect(img).toHaveAttribute('height', '112');
+    });
+
+    it('renders UserAvatar with custom width/height', () => {
+      const { getByRole } = render(
+        <UserAvatar src="avatar.jpg" alt="test" width={80} height={90} />
+      );
+      const img = getByRole('img');
+      expect(img).toHaveAttribute('width', '80');
+      expect(img).toHaveAttribute('height', '90');
+    });
   });
 });
