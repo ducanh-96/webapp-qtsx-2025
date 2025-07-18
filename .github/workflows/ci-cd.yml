@@ -57,6 +57,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
+      - name: Kiểm tra thư mục .next/
+        run: ls -la .next/
       - name: Install dependencies
         run: npm ci
 
