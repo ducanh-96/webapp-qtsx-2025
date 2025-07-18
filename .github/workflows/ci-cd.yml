@@ -133,11 +133,14 @@ jobs:
       - name: Kiểm tra thư mục .next/ sau khi build
         run: ls -la .next/
 
+      - name: Show files in .next before uploading
+        run: find .next -type f
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-files
-          path: .next/
+          path: .next
           retention-days: 7
 
   # End-to-End Tests
