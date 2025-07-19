@@ -149,7 +149,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-files
-          path: ./webapp-qtsx-2025/.next
+          path: ./.next
           if-no-files-found: error
           retention-days: 7
 
