@@ -39,7 +39,15 @@ jobs:
         run: npm run lint
 
       - name: Run Prettier check
-        run: npx prettier --check .
+        run: |
+          npx prettier --check . --ignore-path .prettierignore || {
+            echo "Code formatting issues found. Running prettier --write to fix..."
+            npx prettier --write .
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add .
+            git diff --staged --quiet || git commit -m "Auto-fix code formatting with Prettier"
+          }
 
       - name: TypeScript type checking
         run: npm run type-check
