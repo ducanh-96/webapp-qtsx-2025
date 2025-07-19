@@ -163,16 +163,16 @@ jobs:
           echo "Key files in .next:"
           find .next -name "*.js" -o -name "*.json" | head -10
 
-      # Upload cả thư mục .next và node_modules cần thiết
       - name: Upload Next.js build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: nextjs-build
           path: |
-            .next/
+            .next/**/*
             package.json
             package-lock.json
-            public/
+            public/**/*
+            next.config.js
           if-no-files-found: error
           retention-days: 1
 
@@ -197,24 +197,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: nextjs-build
-          path: .
-
-      - name: Verify downloaded artifacts
+      - name: Create .env.local from secrets
         run: |
-          echo "Checking downloaded .next directory:"
-          if [ -d ".next" ]; then
-            echo "✅ .next directory found"
-            ls -la .next/
-          else
-            echo "❌ .next directory not found after download"
-            echo "Available files:"
-            ls -la
-            exit 1
-          fi
+          echo "NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}" >> .env.local
+          echo "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}" >> .env.local
+          echo "NEXT_PUBLIC_FIREBASE_PROJECT_ID=${NEXT_PUBLIC_FIREBASE_PROJECT_ID}" >> .env.local
+          echo "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}" >> .env.local
+          echo "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}" >> .env.local
+          echo "NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID}" >> .env.local
+          echo "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID}" >> .env.local
+
+      - name: Build application
+        run: npm run build
           
       - name: Install Cypress dependencies
         run: npx cypress install
@@ -226,11 +220,11 @@ jobs:
         env:
           PORT: 3000
 
-      - name: Install wait-on
-        run: npm install -g wait-on
-
       - name: Wait for application to start
-        run: wait-on http://localhost:3000 --timeout 60000
+        run: |
+          echo "Waiting for server to start..."
+          timeout 60 bash -c 'until curl -s http://localhost:3000 > /dev/null; do sleep 2; done'
+          echo "Server is ready!"
 
       - name: Run Cypress tests
         run: npx cypress run --browser ${{ matrix.browser }} --config video=true,screenshotOnRunFailure=true
@@ -276,11 +270,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: nextjs-build
-          path: .
+      - name: Create .env.local from secrets
+        run: |
+          echo "NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}" >> .env.local
+          echo "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}" >> .env.local
+          echo "NEXT_PUBLIC_FIREBASE_PROJECT_ID=${NEXT_PUBLIC_FIREBASE_PROJECT_ID}" >> .env.local
+          echo "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}" >> .env.local
+          echo "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}" >> .env.local
+          echo "NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID}" >> .env.local
+          echo "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID}" >> .env.local
+
+      - name: Build application
+        run: npm run build
 
       - name: Start application
         run: |
@@ -289,11 +290,11 @@ jobs:
         env:
           PORT: 3000
 
-      - name: Install wait-on
-        run: npm install -g wait-on
-
       - name: Wait for application to start
-        run: wait-on http://localhost:3000 --timeout 60000
+        run: |
+          echo "Waiting for server to start..."
+          timeout 60 bash -c 'until curl -s http://localhost:3000 > /dev/null; do sleep 2; done'
+          echo "Server is ready!"
 
       - name: Run Lighthouse CI
         run: |
