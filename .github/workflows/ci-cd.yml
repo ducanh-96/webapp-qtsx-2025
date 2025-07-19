@@ -226,8 +226,11 @@ jobs:
         env:
           PORT: 3000
 
+      - name: Install wait-on
+        run: npm install -g wait-on
+
       - name: Wait for application to start
-        run: npx wait-on http://localhost:3000 --timeout 60000
+        run: wait-on http://localhost:3000 --timeout 60000
 
       - name: Run Cypress tests
         run: npx cypress run --browser ${{ matrix.browser }} --config video=true,screenshotOnRunFailure=true
@@ -286,8 +289,11 @@ jobs:
         env:
           PORT: 3000
 
+      - name: Install wait-on
+        run: npm install -g wait-on
+
       - name: Wait for application to start
-        run: npx wait-on http://localhost:3000 --timeout 60000
+        run: wait-on http://localhost:3000 --timeout 60000
 
       - name: Run Lighthouse CI
         run: |
