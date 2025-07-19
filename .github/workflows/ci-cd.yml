@@ -150,7 +150,9 @@ jobs:
         with:
           name: build-files
           path: .next
+          if-no-files-found: error
           retention-days: 7
+        working-directory: ./webapp-qtsx-2025
 
   # End-to-End Tests
   e2e:
