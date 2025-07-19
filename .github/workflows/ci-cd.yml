@@ -132,7 +132,7 @@ jobs:
         run: npm run build
 
       - name: Kiểm tra thư mục .next/ sau khi build
-        run: ls -la .next/
+        run: ls -la .next
 
       - name: Show files in .next before uploading
         run: find .next -type f
@@ -149,10 +149,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-files
-          path: .next
+          path: ./webapp-qtsx-2025/.next
           if-no-files-found: error
           retention-days: 7
-        working-directory: ./webapp-qtsx-2025
 
   # End-to-End Tests
   e2e:
