@@ -127,31 +127,46 @@ jobs:
           echo "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}" >> .env.local
           echo "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}" >> .env.local
           echo "NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID}" >> .env.local
+          echo "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID}" >> .env.local
+
+      - name: Verify environment setup
+        run: |
+          echo "Environment variables set:"
+          grep -c "NEXT_PUBLIC" .env.local || echo "No env vars found"
+          echo "Current directory contents:"
+          ls -la
 
       - name: Build application
-        run: npm run build
+        run: |
+          echo "Starting Next.js build..."
+          npm run build
+          echo "✅ Build completed successfully"
 
-      - name: Kiểm tra thư mục .next/ sau khi build
-        run: ls -la .next
+      - name: Verify build output
+        run: |
+          echo "Checking .next directory:"
+          if [ -d ".next" ]; then
+            echo "✅ .next directory exists"
+            echo "Contents of .next:"
+            ls -la .next/
+            echo "Total files in .next:"
+            find .next -type f | wc -l
+          else
+            echo "❌ .next directory not found!"
+            echo "Current directory contents:"
+            ls -la
+            exit 1
+          fi
 
-      - name: Show files in .next before uploading
-        run: find .next -type f
-
-      - name: List all artifacts
-        run: gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Print working directory
-        run: pwd
-
-      - name: Upload build artifacts
+      - name: Upload Next.js build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-files
-          path: ${{ github.workspace }}/.next
+          name: nextjs-build
+          path: |
+            .next/
+            !.next/cache/
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 1
 
   # End-to-End Tests
   e2e:
@@ -177,9 +192,14 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-files
+          name: nextjs-build
           path: .next
 
+      - name: Verify downloaded artifacts
+        run: |
+          echo "Checking downloaded .next directory:"
+          ls -la .next/
+          
       - name: Install Cypress dependencies
         run: npx cypress install
 
@@ -235,7 +255,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-files
+          name: nextjs-build
           path: .next
 
       - name: Start application
@@ -283,7 +303,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-files
+          name: nextjs-build
           path: .next
 
       - name: Deploy to Vercel Staging
@@ -333,7 +353,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-files
+          name: nextjs-build
           path: .next
 
       - name: Deploy to Vercel Production
@@ -390,7 +410,7 @@ jobs:
       - name: Clean up artifacts
         uses: geekyeggo/delete-artifact@v2
         with:
-          name: build-files
+          name: nextjs-build
           failOnError: false
 
       - name: Clean up old deployments
